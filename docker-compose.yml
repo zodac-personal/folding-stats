@@ -12,8 +12,8 @@ services:
       args:
         # Docker image versions
         HTTPD_VERSION: "2.4.65"     # https://hub.docker.com/_/httpd/tags
-        MINIFY_VERSION: "v2.24.3"   # https://hub.docker.com/r/tdewolff/minify/tags
-        NODE_VERSION: "24.8.0"      # https://hub.docker.com/_/node/tags
+        MINIFY_VERSION: "v2.24.7"   # https://hub.docker.com/r/tdewolff/minify/tags
+        NODE_VERSION: "25.2.1"      # https://hub.docker.com/_/node/tags
         # Build arguments
         ADMIN_EMAIL_ADDRESS: "${ADMIN_EMAIL_ADDRESS}"
         FORUM_LINK: "${FORUM_LINK}"
@@ -39,8 +39,8 @@ services:
       dockerfile: docker/backend/Dockerfile
       args:
         # Docker image versions
-        DEBIAN_VERSION: "12"      # https://console.cloud.google.com/artifacts/docker/distroless/us/gcr.io
-        JAVA_VERSION: "25_36"     # https://hub.docker.com/_/eclipse-temurin/tags
+        DEBIAN_VERSION: "13"      # https://console.cloud.google.com/artifacts/docker/distroless/us/gcr.io
+        JAVA_VERSION: "25.0.1_8"  # https://hub.docker.com/_/eclipse-temurin/tags
         MAVEN_VERSION: "3.9.11"   # https://hub.docker.com/_/maven/tags
         # Build arguments
         KEYSTORE_PASSWORD: "${KEYSTORE_PASSWORD}"
@@ -96,7 +96,7 @@ services:
       dockerfile: docker/database/Dockerfile
       args:
         # Docker image versions
-        POSTGRES_VERSION: "18.0" # https://hub.docker.com/_/postgres/
+        POSTGRES_VERSION: "18.1" # https://hub.docker.com/_/postgres/
         # Build arguments
         ADMIN_USERNAME: "${ADMIN_USER}"
         ADMIN_PASSWORD: "${ADMIN_PASSWORD}"

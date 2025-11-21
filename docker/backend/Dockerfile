@@ -77,7 +77,7 @@ RUN --mount=type=cache,target=/root/.m2 mvn verify -P docker -Dlogging-config-lo
 FROM eclipse-temurin:${JAVA_VERSION}-jdk AS jdk_builder
 
 RUN apt-get update && apt-get install -yqq --no-install-recommends binutils && \
-        jlink --compress=2 \
+        jlink --compress=zip-9 \
         --no-header-files \
         --no-man-pages \
         --strip-debug \
@@ -88,7 +88,7 @@ RUN apt-get update && apt-get install -yqq --no-install-recommends binutils && \
 ############################
 # Stage 5: Prep scripts
 #############################
-FROM debian:bookworm-slim AS prep_scripts
+FROM debian:trixie-slim AS prep_scripts
 COPY ./docker/backend/scripts/startup.sh /startup.sh
 COPY ./docker/backend/scripts/healthcheck.sh /healthcheck.sh
 RUN chmod +x /startup.sh /healthcheck.sh
@@ -96,7 +96,7 @@ RUN chmod +x /startup.sh /healthcheck.sh
 ############################
 # Stage 6: Install busybox
 #############################
-FROM debian:bookworm-slim AS shell_builder
+FROM debian:trixie-slim AS shell_builder
 RUN apt-get update && apt-get install -y busybox-static
 
 ############################
@@ -111,7 +111,6 @@ COPY --from=application_builder /folding-stats.jar /folding-stats.jar
 COPY --from=cert_builder /usr/local/certs/stats/ /usr/local/certs/stats/
 # Config and startup script
 COPY ./docker/backend/config/log4j2.xml /var/backend/log4j2.xml
-#COPY ./docker/backend/scripts/startup.sh /startup.sh
 COPY --from=prep_scripts /startup.sh /startup.sh
 COPY --from=prep_scripts /healthcheck.sh /healthcheck.sh
 COPY --from=shell_builder /bin/busybox /busybox
@@ -123,6 +122,6 @@ ENV PATH="${JAVA_HOME}/bin:${PATH}"
 WORKDIR /var/backend/logs
 
 # Set up the healthcheck
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD ["/healthcheck.sh"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD [ "/healthcheck.sh" ]
 
 ENTRYPOINT [ "/startup.sh" ]
