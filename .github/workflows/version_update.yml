@@ -41,7 +41,7 @@ jobs:
             ${{ runner.os }}-dependency-check-
 
       - name: Set up maven
-        uses: s4u/setup-maven-action@v1.19.0
+        uses: s4u/setup-maven-action@v1.18.0
         with:
           checkout-fetch-depth: 0
           java-distribution: 'temurin'

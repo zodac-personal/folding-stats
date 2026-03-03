@@ -30,9 +30,16 @@ import net.zodac.folding.api.tc.HardwareType;
 
 /**
  * REST request to create/update a {@link Hardware}.
+ *
+ * @param hardwareName the LARS DB name
+ * @param displayName  the display name for the {@code Team Competition}
+ * @param hardwareMake the {@link HardwareMake} of the {@link Hardware}
+ * @param hardwareType the {@link HardwareType} of the {@link Hardware}
+ * @param multiplier   the calculated multiplier
+ * @param averagePpd   the average PPD of the {@link Hardware}
  */
 @Schema(name = "HardwareRequest",
-    description = "An example request to create a hardware, with all fields",
+    description = "A JSON request to create a hardware through the /hardware endpoint, with all fields",
     example = """
         {
           "hardwareName": "GA106 [GeForce RTX 3060]",

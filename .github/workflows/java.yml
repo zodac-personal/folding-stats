@@ -49,12 +49,12 @@ jobs:
             ${{ runner.os }}-dependency-check-
 
       - name: Set up maven
-        uses: s4u/setup-maven-action@v1.19.0
+        uses: s4u/setup-maven-action@v1.18.0
         with:
           checkout-fetch-depth: 0
           java-distribution: 'temurin'
           java-version: '25'
-          maven-version: '3.9.11'
+          maven-version: '3.9.12'
 
       - name: Deploy docker containers
         uses: hoverkraft-tech/compose-action@v2.5.0

@@ -18,6 +18,7 @@
 package net.zodac.folding.api.tc;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -47,6 +48,19 @@ import net.zodac.folding.rest.api.tc.request.HardwareRequest;
 @ToString(doNotUseGetters = true)
 @EqualsAndHashCode
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+@Schema(name = "Hardware",
+    description = "The JSON representation of a Hardware object",
+    example = """
+        {
+          "id": 1,
+          "hardwareName": "GA106 [GeForce RTX 3060]",
+          "displayName": "GeForce RTX 3060",
+          "hardwareMake": "NVIDIA",
+          "hardwareType": "GPU",
+          "multiplier": 10.50,
+          "averagePpd": 555
+        }"""
+)
 public final class Hardware implements Comparable<Hardware>, ResponsePojo {
 
     /**
@@ -55,12 +69,58 @@ public final class Hardware implements Comparable<Hardware>, ResponsePojo {
      */
     public static final int EMPTY_HARDWARE_ID = 0;
 
+    @Schema(
+        description = "The ID of the hardware",
+        example = "1",
+        requiredMode = Schema.RequiredMode.REQUIRED,
+        accessMode = Schema.AccessMode.READ_ONLY
+    )
     private final int id;
+    @Schema(
+        description = "The internal, unique name of the hardware",
+        example = "GA106 [GeForce RTX 3060]",
+        requiredMode = Schema.RequiredMode.REQUIRED,
+        accessMode = Schema.AccessMode.READ_ONLY
+    )
     private final String hardwareName;
+    @Schema(
+        description = "The user-friendly display name of the hardware",
+        example = "GeForce RTX 3060",
+        requiredMode = Schema.RequiredMode.REQUIRED,
+        accessMode = Schema.AccessMode.READ_WRITE
+    )
     private final String displayName;
+    @Schema(
+        description = "The manufacturer of the hardware (case-sensitive)",
+        example = "NVIDIA",
+        oneOf = HardwareMake.class,
+        requiredMode = Schema.RequiredMode.REQUIRED,
+        accessMode = Schema.AccessMode.READ_WRITE
+    )
     private final HardwareMake hardwareMake;
+    @Schema(
+        description = "The type of the hardware (case-sensitive)",
+        example = "GPU",
+        oneOf = HardwareType.class,
+        requiredMode = Schema.RequiredMode.REQUIRED,
+        accessMode = Schema.AccessMode.READ_WRITE
+    )
     private final HardwareType hardwareType;
+    @Schema(
+        description = "The multiplier of the hardware, compared to the best performing hardware of the same type",
+        example = "10.50",
+        minimum = "1.00",
+        requiredMode = Schema.RequiredMode.REQUIRED,
+        accessMode = Schema.AccessMode.READ_WRITE
+    )
     private final double multiplier;
+    @Schema(
+        description = "The average PPD of the hardware",
+        example = "555",
+        minimum = "1",
+        requiredMode = Schema.RequiredMode.REQUIRED,
+        accessMode = Schema.AccessMode.READ_WRITE
+    )
     private final long averagePpd;
 
     /**

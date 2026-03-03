@@ -23,9 +23,14 @@ import net.zodac.folding.api.tc.stats.OffsetTcStats;
 
 /**
  * REST request to create/update a {@link OffsetTcStats}.
+ *
+ * @param pointsOffset           the points offset
+ * @param multipliedPointsOffset the multiplied points offset
+ * @param unitsOffset            the units offset
  */
 @Schema(name = "OffsetTcStatsRequest",
-    description = "An example request to offset the stats for a user (at least one of 'pointsOffset' or 'multipliedPointsOffset' must be non-zero)",
+    description = "A JSON request to offset the stats for a user through the /stats endpoint " +
+        "(at least one of 'pointsOffset' or 'multipliedPointsOffset' must be non-zero)",
     example = """
         {
           "pointsOffset": 150,
@@ -33,6 +38,7 @@ import net.zodac.folding.api.tc.stats.OffsetTcStats;
           "unitsOffset": 15
         }"""
 )
+// TODO: Replace with OffsetTcStats
 public record OffsetTcStatsRequest(
     @Schema(
         description = "The points offset (positive of negative) to be applied to a user's TC stats",
