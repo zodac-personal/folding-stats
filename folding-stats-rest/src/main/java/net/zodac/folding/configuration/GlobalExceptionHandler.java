@@ -17,14 +17,13 @@
 
 package net.zodac.folding.configuration;
 
-import static net.zodac.folding.rest.api.util.RestUtilConstants.GSON;
-
 import net.zodac.folding.api.exception.ConflictException;
 import net.zodac.folding.api.exception.UsedByException;
 import net.zodac.folding.api.exception.ValidationException;
 import net.zodac.folding.api.tc.change.UserChangeState;
 import net.zodac.folding.rest.api.LoginCredentials;
 import net.zodac.folding.rest.api.header.RestHeader;
+import net.zodac.folding.rest.api.util.RestUtilConstants;
 import net.zodac.folding.rest.exception.ForbiddenException;
 import net.zodac.folding.rest.exception.InvalidDayException;
 import net.zodac.folding.rest.exception.InvalidLoginCredentialsException;
@@ -132,7 +131,7 @@ public class GlobalExceptionHandler {
     public String invalidId(final MethodArgumentTypeMismatchException e) {
         final String errorMessage = String.format("The input is not a valid format: %s", e.getMessage());
         LOGGER.error(errorMessage);
-        return GSON.toJson(ErrorResponse.create(errorMessage));
+        return RestUtilConstants.JSON_MAPPER.writeValueAsString(ErrorResponse.create(errorMessage));
     }
 
     /**
@@ -150,7 +149,7 @@ public class GlobalExceptionHandler {
     public String invalidBody(final HttpMessageNotReadableException e) {
         LOGGER.debug("Payload is null", e);
         LOGGER.error("Payload is null");
-        return GSON.toJson(ErrorResponse.create("Payload is null"));
+        return RestUtilConstants.JSON_MAPPER.writeValueAsString(ErrorResponse.create("Payload is null"));
     }
 
     /**
@@ -168,7 +167,7 @@ public class GlobalExceptionHandler {
     public String missingParameter(final MissingServletRequestParameterException e) {
         final String errorMessage = String.format("Missing parameter '%s' of type '%s'", e.getParameterName(), e.getParameterType());
         LOGGER.error(errorMessage, e);
-        return GSON.toJson(ErrorResponse.create(errorMessage));
+        return RestUtilConstants.JSON_MAPPER.writeValueAsString(ErrorResponse.create(errorMessage));
     }
 
     /**
@@ -186,7 +185,7 @@ public class GlobalExceptionHandler {
     public String invalidYear(final InvalidYearException e) {
         final String errorMessage = String.format("The year '%s' is not a valid format", e.getYear());
         LOGGER.error(errorMessage);
-        return GSON.toJson(ErrorResponse.create(errorMessage));
+        return RestUtilConstants.JSON_MAPPER.writeValueAsString(ErrorResponse.create(errorMessage));
     }
 
     /**
@@ -204,7 +203,7 @@ public class GlobalExceptionHandler {
     public String invalidMonth(final InvalidMonthException e) {
         final String errorMessage = String.format("The month '%s' is not a valid format", e.getMonth());
         LOGGER.error(errorMessage);
-        return GSON.toJson(ErrorResponse.create(errorMessage));
+        return RestUtilConstants.JSON_MAPPER.writeValueAsString(ErrorResponse.create(errorMessage));
     }
 
     /**
@@ -222,7 +221,7 @@ public class GlobalExceptionHandler {
     public String invalidDay(final InvalidDayException e) {
         final String errorMessage = String.format("The day '%s' is not a valid format", e.getDay());
         LOGGER.error(errorMessage);
-        return GSON.toJson(ErrorResponse.create(errorMessage));
+        return RestUtilConstants.JSON_MAPPER.writeValueAsString(ErrorResponse.create(errorMessage));
     }
 
     /**
@@ -239,7 +238,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidLoginCredentialsException.class)
     public String invalidLoginCredentials(final InvalidLoginCredentialsException e) {
         final String errorMessage = String.format("Invalid login credentials: '%s'", e.getLoginCredentials());
-        return GSON.toJson(ErrorResponse.create(errorMessage));
+        return RestUtilConstants.JSON_MAPPER.writeValueAsString(ErrorResponse.create(errorMessage));
     }
 
     /**
@@ -257,7 +256,7 @@ public class GlobalExceptionHandler {
     public String dayOutOfRange(final OutOfRangeDayException e) {
         final String errorMessage = String.format("The day '%s' is not a valid day for %s/%s", e.getDay(), e.getYear(), e.getMonth());
         LOGGER.error(errorMessage);
-        return GSON.toJson(ErrorResponse.create(errorMessage));
+        return RestUtilConstants.JSON_MAPPER.writeValueAsString(ErrorResponse.create(errorMessage));
     }
 
     /**
@@ -276,7 +275,7 @@ public class GlobalExceptionHandler {
         final String errorMessage = String.format("%s '%s' cannot be updated to '%s'", UserChangeState.class.getSimpleName(), e.getFromState(),
             e.getToState());
         LOGGER.error(errorMessage);
-        return GSON.toJson(ErrorResponse.create(errorMessage));
+        return RestUtilConstants.JSON_MAPPER.writeValueAsString(ErrorResponse.create(errorMessage));
     }
 
     /**
@@ -293,7 +292,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ValidationException.class)
     public String validationFailure(final ValidationException e) {
         LOGGER.error("Object failed validation: {}", e.getValidationFailure());
-        return GSON.toJson(e.getValidationFailure());
+        return RestUtilConstants.JSON_MAPPER.writeValueAsString(e.getValidationFailure());
     }
 
     /**
@@ -310,7 +309,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConflictException.class)
     public String conflictedObject(final ConflictException e) {
         LOGGER.error("Object conflicts with an existing object: {}", e.getConflictFailure());
-        return GSON.toJson(e.getConflictFailure());
+        return RestUtilConstants.JSON_MAPPER.writeValueAsString(e.getConflictFailure());
     }
 
     /**
@@ -327,7 +326,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UsedByException.class)
     public String inUse(final UsedByException e) {
         LOGGER.error("Object is used by an existing object: {}", e.getUsedByFailure());
-        return GSON.toJson(e.getUsedByFailure());
+        return RestUtilConstants.JSON_MAPPER.writeValueAsString(e.getUsedByFailure());
     }
 
     /**
@@ -345,7 +344,7 @@ public class GlobalExceptionHandler {
     public String invalidContentType(final HttpMediaTypeNotSupportedException e) {
         final String errorMessage = String.format("%s '%s' not supported for this URL", RestHeader.CONTENT_TYPE.headerName(), e.getContentType());
         LOGGER.error(errorMessage);
-        return GSON.toJson(ErrorResponse.create(errorMessage));
+        return RestUtilConstants.JSON_MAPPER.writeValueAsString(ErrorResponse.create(errorMessage));
     }
 
     /**
@@ -362,6 +361,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public String serverError(final Exception e) {
         LOGGER.error("Unhandled exception occurred", e);
-        return GSON.toJson(ErrorResponse.create("Unhandled exception occurred, please contact admin"));
+        return RestUtilConstants.JSON_MAPPER.writeValueAsString(ErrorResponse.create("Unhandled exception occurred, please contact admin"));
     }
 }

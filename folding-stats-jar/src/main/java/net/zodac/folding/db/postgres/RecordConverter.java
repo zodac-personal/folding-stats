@@ -22,9 +22,6 @@ import static net.zodac.folding.db.postgres.gen.tables.SystemUsers.SYSTEM_USERS;
 import static net.zodac.folding.db.postgres.gen.tables.Teams.TEAMS;
 import static net.zodac.folding.db.postgres.gen.tables.Users.USERS;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import java.time.LocalDateTime;
 import java.util.Set;
 import net.zodac.folding.api.UserAuthenticationResult;
 import net.zodac.folding.api.tc.Category;
@@ -53,20 +50,13 @@ import net.zodac.folding.db.postgres.gen.tables.records.UserTcStatsHourlyRecord;
 import net.zodac.folding.db.postgres.gen.tables.records.UserTotalStatsRecord;
 import net.zodac.folding.db.postgres.gen.tables.records.UsersRecord;
 import net.zodac.folding.rest.api.tc.historic.HistoricStats;
-import net.zodac.folding.rest.api.util.LocalDateTimeGsonTypeAdapter;
+import net.zodac.folding.rest.api.util.RestUtilConstants;
 import org.jooq.Record;
 
 /**
  * Utility class that converts a {@link Record} into another POJO for {@link PostgresDbManager}.
  */
 final class RecordConverter {
-
-    // We don't try and reuse the GSON instance available in RestUtilConstants
-    // This is because we do not want pretty-print enabled since that would increase the size of the JSON string being persisted in the DB
-    static final Gson GSON = new GsonBuilder()
-        .registerTypeAdapter(LocalDateTime.class, LocalDateTimeGsonTypeAdapter.getInstance())
-        .disableHtmlEscaping()
-        .create();
 
     private static final String PASSWORD_MATCH_FIELD_NAME = "is_password_match";
 
@@ -235,7 +225,7 @@ final class RecordConverter {
      * @return the converted {@link MonthlyResult}
      */
     static MonthlyResult toMonthlyResult(final MonthlyResultsRecord monthlyResultsRecord) {
-        final MonthlyResult monthlyResult = GSON.fromJson(monthlyResultsRecord.getJsonResult(), MonthlyResult.class);
+        final MonthlyResult monthlyResult = RestUtilConstants.JSON_MAPPER.readValue(monthlyResultsRecord.getJsonResult(), MonthlyResult.class);
         return MonthlyResult.updateWithEmptyCategories(monthlyResult);
     }
 
@@ -271,8 +261,8 @@ final class RecordConverter {
             userChangesRecord.getUserChangeId(),
             userChangesRecord.getCreatedUtcTimestamp(),
             userChangesRecord.getUpdatedUtcTimestamp(),
-            GSON.fromJson(userChangesRecord.getPreviousUser(), User.class),
-            GSON.fromJson(userChangesRecord.getNewUser(), User.class),
+            RestUtilConstants.JSON_MAPPER.readValue(userChangesRecord.getPreviousUser(), User.class),
+            RestUtilConstants.JSON_MAPPER.readValue(userChangesRecord.getNewUser(), User.class),
             UserChangeState.get(userChangesRecord.getState())
         );
     }

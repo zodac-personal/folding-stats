@@ -17,7 +17,7 @@
 
 package net.zodac.folding.api.tc.lars;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Representation of an individual GPU from the LARS DB.
@@ -51,10 +51,10 @@ import com.google.gson.annotations.SerializedName;
  * @param ppdAverageOverall the average PPD of the GPU on all OSs
  * @see <a href="https://folding.lar.systems/api/gpu_ppd/gpu_rank_list.json">LARS GPU PPD database API</a>
  */
-public record LarsGpu(@SerializedName("gpu_name") String name,
-                      @SerializedName("fah_client_description") String detailedName,
-                      @SerializedName("make") String make,
-                      @SerializedName("gpu_rank") int rank,
-                      @SerializedName("gpu_handicap") double multiplier,
-                      @SerializedName("ppd_average_overall") long ppdAverageOverall) {
+public record LarsGpu(@JsonProperty("gpu_name") String name,
+                      @JsonProperty("fah_client_description") String detailedName,
+                      @JsonProperty("make") String make,
+                      @JsonProperty("gpu_rank") int rank,
+                      @JsonProperty("gpu_handicap") double multiplier,
+                      @JsonProperty("ppd_average_overall") long ppdAverageOverall) {
 }

@@ -17,14 +17,15 @@
 
 package net.zodac.folding.client.java.response;
 
-import com.google.gson.reflect.TypeToken;
-import java.lang.reflect.Type;
 import java.net.http.HttpResponse;
 import java.util.Collection;
+import java.util.List;
 import net.zodac.folding.api.tc.change.UserChange;
 import net.zodac.folding.client.java.request.UserChangeRequestSender;
 import net.zodac.folding.rest.api.tc.request.UserChangeRequest;
 import net.zodac.folding.rest.api.util.RestUtilConstants;
+import org.jspecify.annotations.Nullable;
+import tools.jackson.core.type.TypeReference;
 
 /**
  * Utility class used to parse a {@link HttpResponse} returned from {@link UserChangeRequestSender}.
@@ -44,18 +45,25 @@ public final class UserChangeResponseParser {
      * @return the retrieved {@link UserChange}s
      */
     public static Collection<UserChange> getAll(final HttpResponse<String> response) {
-        final Type collectionType = UserChangeCollectionType.getInstance().getType();
-        return RestUtilConstants.GSON.fromJson(response.body(), collectionType);
+        final String body = response.body();
+        if (body == null || body.isBlank()) {
+            return List.of();
+        }
+        return RestUtilConstants.JSON_MAPPER.readValue(body, new UserChangeCollectionType());
     }
 
     /**
      * Returns the {@link UserChange} retrieved by {@link UserChangeRequestSender#get(int, String, String)}.
      *
      * @param response the {@link HttpResponse} to parse
-     * @return the retrieved {@link UserChange}
+     * @return the retrieved {@link UserChange}, or {@code null} for a cached value (HTTP_304)
      */
-    public static UserChange get(final HttpResponse<String> response) {
-        return RestUtilConstants.GSON.fromJson(response.body(), UserChange.class);
+    public static @Nullable UserChange get(final HttpResponse<String> response) {
+        final String body = response.body();
+        if (body == null || body.isBlank()) {
+            return null;
+        }
+        return RestUtilConstants.JSON_MAPPER.readValue(body, UserChange.class);
     }
 
     /**
@@ -67,7 +75,7 @@ public final class UserChangeResponseParser {
      * @return the updated {@link UserChange}
      */
     public static UserChange update(final HttpResponse<String> response) {
-        return RestUtilConstants.GSON.fromJson(response.body(), UserChange.class);
+        return RestUtilConstants.JSON_MAPPER.readValue(response.body(), UserChange.class);
     }
 
     /**
@@ -77,23 +85,10 @@ public final class UserChangeResponseParser {
      * @return the created {@link UserChange}
      */
     public static UserChange create(final HttpResponse<String> response) {
-        return RestUtilConstants.GSON.fromJson(response.body(), UserChange.class);
+        return RestUtilConstants.JSON_MAPPER.readValue(response.body(), UserChange.class);
     }
 
-    /**
-     * Private class defining the {@link Collection} for {@link UserChange}s.
-     */
-    private static final class UserChangeCollectionType extends TypeToken<Collection<UserChange>> {
+    private static final class UserChangeCollectionType extends TypeReference<List<UserChange>> {
 
-        private static final UserChangeCollectionType INSTANCE = new UserChangeCollectionType();
-
-        /**
-         * Retrieve a singleton instance of {@link UserChangeCollectionType}.
-         *
-         * @return {@link UserChangeCollectionType} instance.
-         */
-        static UserChangeCollectionType getInstance() {
-            return INSTANCE;
-        }
     }
 }

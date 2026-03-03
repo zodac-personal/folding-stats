@@ -29,6 +29,8 @@ import net.zodac.folding.client.java.response.UserResponseParser;
 import net.zodac.folding.rest.api.exception.FoldingRestException;
 import net.zodac.folding.rest.api.tc.request.UserRequest;
 import net.zodac.folding.test.integration.util.TestConstants;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Utility class for {@link User}-based tests.
@@ -120,8 +122,17 @@ public final class UserUtils {
      */
     public static User get(final int userId) throws FoldingRestException {
         final HttpResponse<String> response = USER_REQUEST_SENDER.get(userId);
+        return getUser(userId, response);
+    }
+
+    private static @NonNull User getUser(final int userId, final HttpResponse<String> response) throws FoldingRestException {
         if (response.statusCode() == HttpURLConnection.HTTP_OK) {
-            return UserResponseParser.get(response);
+            final @Nullable User user = UserResponseParser.get(response);
+            if (user == null) {
+                throw new FoldingRestException(
+                    String.format("Invalid response (%s) when getting user with ID %s: %s", response.statusCode(), userId, response.body()));
+            }
+            return user;
         }
 
         throw new FoldingRestException(
@@ -137,11 +148,6 @@ public final class UserUtils {
      */
     public static User getWithPasskey(final int userId) throws FoldingRestException {
         final HttpResponse<String> response = USER_REQUEST_SENDER.getWithPasskey(userId, ADMIN_USER.userName(), ADMIN_USER.password());
-        if (response.statusCode() == HttpURLConnection.HTTP_OK) {
-            return UserResponseParser.get(response);
-        }
-
-        throw new FoldingRestException(
-            String.format("Invalid response (%s) when getting user with ID %s: %s", response.statusCode(), userId, response.body()));
+        return getUser(userId, response);
     }
 }

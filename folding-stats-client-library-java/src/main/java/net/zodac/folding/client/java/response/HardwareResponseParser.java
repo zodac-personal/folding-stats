@@ -17,14 +17,15 @@
 
 package net.zodac.folding.client.java.response;
 
-import com.google.gson.reflect.TypeToken;
-import java.lang.reflect.Type;
 import java.net.http.HttpResponse;
 import java.util.Collection;
+import java.util.List;
 import net.zodac.folding.api.tc.Hardware;
 import net.zodac.folding.client.java.request.HardwareRequestSender;
 import net.zodac.folding.rest.api.tc.request.HardwareRequest;
 import net.zodac.folding.rest.api.util.RestUtilConstants;
+import org.jspecify.annotations.Nullable;
+import tools.jackson.core.type.TypeReference;
 
 /**
  * Utility class used to parse a {@link HttpResponse} returned from {@link HardwareRequestSender}.
@@ -42,8 +43,12 @@ public final class HardwareResponseParser {
      * @return the retrieved {@link Hardware}s
      */
     public static Collection<Hardware> getAll(final HttpResponse<String> response) {
-        final Type collectionType = HardwareCollectionType.getInstance().getType();
-        return RestUtilConstants.GSON.fromJson(response.body(), collectionType);
+        final String body = response.body();
+        if (body == null || body.isBlank()) {
+            return List.of();
+        }
+
+        return RestUtilConstants.JSON_MAPPER.readValue(body, new HardwareCollectionType());
     }
 
     /**
@@ -51,10 +56,15 @@ public final class HardwareResponseParser {
      * {@link HardwareRequestSender#get(String)}.
      *
      * @param response the {@link HttpResponse} to parse
-     * @return the retrieved {@link Hardware}
+     * @return the retrieved {@link Hardware}, or {@code null} for a cached value (HTTP_304)
      */
-    public static Hardware get(final HttpResponse<String> response) {
-        return RestUtilConstants.GSON.fromJson(response.body(), Hardware.class);
+    public static @Nullable Hardware get(final HttpResponse<String> response) {
+        final String body = response.body();
+        if (body == null || body.isBlank()) {
+            return null;
+        }
+
+        return RestUtilConstants.JSON_MAPPER.readValue(body, Hardware.class);
     }
 
     /**
@@ -65,7 +75,7 @@ public final class HardwareResponseParser {
      * @return the created {@link Hardware}
      */
     public static Hardware create(final HttpResponse<String> response) {
-        return RestUtilConstants.GSON.fromJson(response.body(), Hardware.class);
+        return RestUtilConstants.JSON_MAPPER.readValue(response.body(), Hardware.class);
     }
 
     /**
@@ -76,23 +86,10 @@ public final class HardwareResponseParser {
      * @return the updated {@link Hardware}
      */
     public static Hardware update(final HttpResponse<String> response) {
-        return RestUtilConstants.GSON.fromJson(response.body(), Hardware.class);
+        return RestUtilConstants.JSON_MAPPER.readValue(response.body(), Hardware.class);
     }
 
-    /**
-     * Private class defining the {@link Collection} for {@link Hardware}s.
-     */
-    private static final class HardwareCollectionType extends TypeToken<Collection<Hardware>> {
+    private static final class HardwareCollectionType extends TypeReference<List<Hardware>> {
 
-        private static final HardwareCollectionType INSTANCE = new HardwareCollectionType();
-
-        /**
-         * Retrieve a singleton instance of {@link HardwareCollectionType}.
-         *
-         * @return {@link HardwareCollectionType} instance.
-         */
-        static HardwareCollectionType getInstance() {
-            return INSTANCE;
-        }
     }
 }

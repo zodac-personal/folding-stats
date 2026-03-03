@@ -41,8 +41,7 @@ public record UserRequestSender(String usersUrl) {
     /**
      * Create an instance of {@link UserRequestSender}.
      *
-     * @param foldingUrl the root URL of the {@code /folding} endpoint, i.e:
-     *                   <pre>http://127.0.0.1:8080/folding</pre>
+     * @param foldingUrl the root URL of the {@code /folding} endpoint, i.e: {@code http://127.0.0.1:8080/folding}
      * @return the created {@link UserRequestSender}
      */
     public static UserRequestSender createWithUrl(final String foldingUrl) {
@@ -256,7 +255,7 @@ public record UserRequestSender(String usersUrl) {
      */
     public HttpResponse<String> create(final UserRequest user, final String userName, final String password) throws FoldingRestException {
         final HttpRequest request = HttpRequest.newBuilder()
-            .POST(HttpRequest.BodyPublishers.ofString(RestUtilConstants.GSON.toJson(user)))
+            .POST(HttpRequest.BodyPublishers.ofString(RestUtilConstants.JSON_MAPPER.writeValueAsString(user)))
             .uri(RestUri.create(usersUrl))
             .header(RestHeader.CONTENT_TYPE.headerName(), ContentType.JSON.contentTypeValue())
             .header(RestHeader.AUTHORIZATION.headerName(), encodeBasicAuthentication(userName, password)).build();
@@ -284,7 +283,7 @@ public record UserRequestSender(String usersUrl) {
     public HttpResponse<String> update(final int userId, final UserRequest user, final String userName, final String password)
         throws FoldingRestException {
         final HttpRequest request = HttpRequest.newBuilder()
-            .PUT(HttpRequest.BodyPublishers.ofString(RestUtilConstants.GSON.toJson(user)))
+            .PUT(HttpRequest.BodyPublishers.ofString(RestUtilConstants.JSON_MAPPER.writeValueAsString(user)))
             .uri(RestUri.create(usersUrl, userId))
             .header(RestHeader.CONTENT_TYPE.headerName(), ContentType.JSON.contentTypeValue())
             .header(RestHeader.AUTHORIZATION.headerName(), encodeBasicAuthentication(userName, password))

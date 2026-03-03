@@ -17,7 +17,10 @@
 
 package net.zodac.folding.api.tc;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import java.util.Objects;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -41,10 +44,12 @@ import org.jspecify.annotations.Nullable;
  * Each {@link User} can join a {@link Team} in order to have their Folding@Home stats retrieved, and they can
  * contribute to the {@code Team Competition}.
  */
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
 @Getter
 @Accessors(fluent = true)
 @ToString(doNotUseGetters = true)
 @EqualsAndHashCode
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public final class User implements ResponsePojo {
 
     /**
@@ -66,34 +71,6 @@ public final class User implements ResponsePojo {
     private final Hardware hardware;
     private final Team team;
     private final Role role;
-
-    /**
-     * Constructor.
-     *
-     * @param id              the ID
-     * @param foldingUserName the Folding@Home username
-     * @param displayName     the display name for the {@code Team Competition}
-     * @param passkey         the Folding@Home passkey for this user
-     * @param category        the {@link Category} the user is eligible for when added to a {@link Team}
-     * @param profileLink     a URL linking to the {@link User}'s profile on their forum
-     * @param liveStatsLink   a URL linking to the live Folding@Home stats (HFM, for example) for the {@link User}
-     * @param hardware        the {@link Hardware} that this {@link User} is Folding on
-     * @param team            the {@link Team} that the {@link User} is Folding for
-     * @param role            the {@link User}'s role in their {@link Team}
-     */
-    public User(final int id, final String foldingUserName, final String displayName, final String passkey, final Category category,
-                @Nullable final String profileLink, @Nullable final String liveStatsLink, final Hardware hardware, final Team team, final Role role) {
-        this.id = id;
-        this.foldingUserName = foldingUserName;
-        this.displayName = displayName;
-        this.passkey = passkey;
-        this.category = category;
-        this.profileLink = profileLink;
-        this.liveStatsLink = liveStatsLink;
-        this.hardware = hardware;
-        this.team = team;
-        this.role = role;
-    }
 
     /**
      * Creates a {@link User}.

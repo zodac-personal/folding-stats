@@ -47,8 +47,7 @@ public record UserChangeRequestSender(String requestUrl) {
     /**
      * Create an instance of {@link UserChangeRequestSender}.
      *
-     * @param foldingUrl the root URL of the {@code /folding} endpoint, i.e:
-     *                   <pre>http://127.0.0.1:8080/folding</pre>
+     * @param foldingUrl the root URL of the {@code /folding} endpoint, i.e: {@code http://127.0.0.1:8080/folding}
      * @return the created {@link UserChangeRequestSender}
      */
     public static UserChangeRequestSender createWithUrl(final String foldingUrl) {
@@ -203,7 +202,7 @@ public record UserChangeRequestSender(String requestUrl) {
      */
     public HttpResponse<String> create(final UserChangeRequest userChangeRequest) throws FoldingRestException {
         final HttpRequest request = HttpRequest.newBuilder()
-            .POST(HttpRequest.BodyPublishers.ofString(RestUtilConstants.GSON.toJson(userChangeRequest)))
+            .POST(HttpRequest.BodyPublishers.ofString(RestUtilConstants.JSON_MAPPER.writeValueAsString(userChangeRequest)))
             .uri(RestUri.create(requestUrl))
             .header(RestHeader.CONTENT_TYPE.headerName(), ContentType.JSON.contentTypeValue())
             .build();

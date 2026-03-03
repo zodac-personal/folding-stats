@@ -36,6 +36,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import net.zodac.folding.api.tc.User;
 import net.zodac.folding.api.tc.change.UserChange;
 import net.zodac.folding.api.tc.change.UserChangeState;
@@ -514,7 +515,7 @@ class UserChangeTest {
             .as("Did not receive a 200_OK HTTP response: %s", response.body())
             .isEqualTo(HttpURLConnection.HTTP_OK);
 
-        final UserChange retrievedUserChange = UserChangeResponseParser.get(response);
+        final UserChange retrievedUserChange = Objects.requireNonNull(UserChangeResponseParser.get(response));
 
         assertThat(retrievedUserChange)
             .isEqualTo(userChange);
@@ -553,7 +554,7 @@ class UserChangeTest {
         final UserChangeRequest userChangeRequest = generateUserChange(user, VALID_LIVE_STATS_LINK);
 
         final HttpRequest request = HttpRequest.newBuilder()
-            .POST(HttpRequest.BodyPublishers.ofString(RestUtilConstants.GSON.toJson(userChangeRequest)))
+            .POST(HttpRequest.BodyPublishers.ofString(RestUtilConstants.JSON_MAPPER.writeValueAsString(userChangeRequest)))
             .uri(URI.create(FOLDING_URL + "/changes"))
             .header(RestHeader.CONTENT_TYPE.headerName(), ContentType.TEXT.contentTypeValue())
             .build();

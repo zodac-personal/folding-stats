@@ -17,6 +17,7 @@
 
 package net.zodac.folding.api.tc.stats;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -32,6 +33,7 @@ import lombok.experimental.Accessors;
 @Getter
 @EqualsAndHashCode
 @ToString(doNotUseGetters = true)
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Stats {
 
     /**

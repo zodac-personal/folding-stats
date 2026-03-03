@@ -44,8 +44,7 @@ public record TeamCompetitionStatsRequestSender(String statsUrl) {
     /**
      * Create an instance of {@link TeamCompetitionStatsRequestSender}.
      *
-     * @param foldingUrl the root URL of the {@code /folding} endpoint, i.e:
-     *                   <pre>http://127.0.0.1:8080/folding</pre>
+     * @param foldingUrl the root URL of the {@code /folding} endpoint, i.e: {@code http://127.0.0.1:8080/folding}
      * @return the created {@link TeamCompetitionStatsRequestSender}
      */
     public static TeamCompetitionStatsRequestSender createWithUrl(final String foldingUrl) {
@@ -358,7 +357,7 @@ public record TeamCompetitionStatsRequestSender(String statsUrl) {
         final OffsetTcStatsRequest offsetTcStatsRequest = new OffsetTcStatsRequest(pointsOffset, multipliedPointsOffset, unitsOffset);
 
         final HttpRequest request = HttpRequest.newBuilder()
-            .method("PATCH", HttpRequest.BodyPublishers.ofString(RestUtilConstants.GSON.toJson(offsetTcStatsRequest)))
+            .method("PATCH", HttpRequest.BodyPublishers.ofString(RestUtilConstants.JSON_MAPPER.writeValueAsString(offsetTcStatsRequest)))
             .uri(RestUri.create(statsUrl, "users", userId))
             .header(RestHeader.CONTENT_TYPE.headerName(), ContentType.JSON.contentTypeValue())
             .header(RestHeader.AUTHORIZATION.headerName(), encodeBasicAuthentication(userName, password))

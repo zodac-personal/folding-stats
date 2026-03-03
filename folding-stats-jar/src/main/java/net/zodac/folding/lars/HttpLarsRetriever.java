@@ -17,7 +17,6 @@
 
 package net.zodac.folding.lars;
 
-import static net.zodac.folding.rest.api.util.RestUtilConstants.GSON;
 import static net.zodac.folding.rest.api.util.RestUtilConstants.HTTP_CLIENT;
 
 import java.io.IOException;
@@ -39,6 +38,7 @@ import net.zodac.folding.api.util.LoggerName;
 import net.zodac.folding.api.util.StringUtils;
 import net.zodac.folding.rest.api.header.ContentType;
 import net.zodac.folding.rest.api.header.RestHeader;
+import net.zodac.folding.rest.api.util.RestUtilConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -84,7 +84,7 @@ public final class HttpLarsRetriever implements LarsRetriever {
         }
 
         LARS_LOGGER.debug("JSON response: {}", response.body());
-        final LarsGpuResponse larsGpuResponse = GSON.fromJson(response.body(), LarsGpuResponse.class);
+        final LarsGpuResponse larsGpuResponse = RestUtilConstants.JSON_MAPPER.readValue(response.body(), LarsGpuResponse.class);
 
         return larsGpuResponse.rankedGpus()
             .stream()

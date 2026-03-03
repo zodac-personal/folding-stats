@@ -18,7 +18,6 @@
 package net.zodac.folding.test.integration;
 
 import static net.zodac.folding.api.util.EncodingUtils.encodeBasicAuthentication;
-import static net.zodac.folding.rest.api.util.RestUtilConstants.GSON;
 import static net.zodac.folding.rest.api.util.RestUtilConstants.HTTP_CLIENT;
 import static net.zodac.folding.test.integration.util.DummyAuthenticationData.ADMIN_USER;
 import static net.zodac.folding.test.integration.util.DummyAuthenticationData.INVALID_PASSWORD;
@@ -41,12 +40,14 @@ import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Collection;
+import java.util.Objects;
 import net.zodac.folding.api.tc.Team;
 import net.zodac.folding.client.java.response.TeamResponseParser;
 import net.zodac.folding.rest.api.exception.FoldingRestException;
 import net.zodac.folding.rest.api.header.ContentType;
 import net.zodac.folding.rest.api.header.RestHeader;
 import net.zodac.folding.rest.api.tc.request.TeamRequest;
+import net.zodac.folding.rest.api.util.RestUtilConstants;
 import net.zodac.folding.test.integration.util.DummyDataGenerator;
 import net.zodac.folding.test.integration.util.TestConstants;
 import net.zodac.folding.test.integration.util.rest.request.TeamUtils;
@@ -137,7 +138,7 @@ class TeamTest {
             .as("Did not receive a 200_OK HTTP response: %s", response.body())
             .isEqualTo(HttpURLConnection.HTTP_OK);
 
-        final Team team = TeamResponseParser.get(response);
+        final Team team = Objects.requireNonNull(TeamResponseParser.get(response));
         assertThat(team.id())
             .as("Did not receive the expected team: %s", response.body())
             .isEqualTo(teamId);
@@ -152,7 +153,7 @@ class TeamTest {
             .as("Did not receive a 200_OK HTTP response: %s", response.body())
             .isEqualTo(HttpURLConnection.HTTP_OK);
 
-        final Team team = TeamResponseParser.get(response);
+        final Team team = Objects.requireNonNull(TeamResponseParser.get(response));
         assertThat(team.teamName())
             .as("Did not receive the expected team: %s", response.body())
             .isEqualTo(teamName);
@@ -301,7 +302,7 @@ class TeamTest {
         final TeamRequest teamToUpdate = new TeamRequest(createdTeam.teamName(), "Updated description", createdTeam.forumLink());
 
         final HttpRequest request = HttpRequest.newBuilder()
-            .PUT(HttpRequest.BodyPublishers.ofString(GSON.toJson(teamToUpdate)))
+            .PUT(HttpRequest.BodyPublishers.ofString(RestUtilConstants.JSON_MAPPER.writeValueAsString(teamToUpdate)))
             .uri(URI.create(FOLDING_URL + "/teams/" + TestConstants.INVALID_FORMAT_ID))
             .header(RestHeader.CONTENT_TYPE.headerName(), ContentType.JSON.contentTypeValue())
             .header(RestHeader.AUTHORIZATION.headerName(), encodeBasicAuthentication(ADMIN_USER.userName(), ADMIN_USER.password()))
@@ -411,7 +412,7 @@ class TeamTest {
 
         assertThat(TeamResponseParser.getAll(cachedResponse))
             .as("Expected cached response to have the same content as the non-cached response")
-            .isNull();
+            .isEmpty();
     }
 
     @Test
@@ -419,7 +420,7 @@ class TeamTest {
         final TeamRequest teamToCreate = generateTeam();
 
         final HttpRequest request = HttpRequest.newBuilder()
-            .POST(HttpRequest.BodyPublishers.ofString(GSON.toJson(teamToCreate)))
+            .POST(HttpRequest.BodyPublishers.ofString(RestUtilConstants.JSON_MAPPER.writeValueAsString(teamToCreate)))
             .uri(URI.create(FOLDING_URL + "/teams"))
             .header(RestHeader.CONTENT_TYPE.headerName(), ContentType.JSON.contentTypeValue())
             .build();
@@ -438,7 +439,7 @@ class TeamTest {
         final TeamRequest teamToUpdate = new TeamRequest(createdTeam.teamName(), "Updated description", createdTeam.forumLink());
 
         final HttpRequest request = HttpRequest.newBuilder()
-            .PUT(HttpRequest.BodyPublishers.ofString(GSON.toJson(teamToUpdate)))
+            .PUT(HttpRequest.BodyPublishers.ofString(RestUtilConstants.JSON_MAPPER.writeValueAsString(teamToUpdate)))
             .uri(URI.create(FOLDING_URL + "/teams/" + createdTeam.id()))
             .header(RestHeader.CONTENT_TYPE.headerName(), ContentType.JSON.contentTypeValue())
             .build();
@@ -553,7 +554,7 @@ class TeamTest {
 
     @Test
     void whenUpdatingTeam_andOptionalFieldIsEmptyString_thenValueShouldBeNullNotEmpty() throws FoldingRestException {
-        final TeamRequest team = new TeamRequest(nextTeamName(), null, "http://google.com");
+        final TeamRequest team = new TeamRequest(nextTeamName(), null, "https://google.com");
         final Team createdTeam = create(team);
 
         final TeamRequest teamToUpdate = new TeamRequest(createdTeam.teamName(), createdTeam.teamDescription(), "");
@@ -573,10 +574,10 @@ class TeamTest {
 
     @Test
     void whenCreatingTeam_andContentTypeIsNotJson_thenResponse415Status() throws IOException, InterruptedException {
-        final TeamRequest team = new TeamRequest(nextTeamName(), null, "http://google.com");
+        final TeamRequest team = new TeamRequest(nextTeamName(), null, "https://google.com");
 
         final HttpRequest request = HttpRequest.newBuilder()
-            .POST(HttpRequest.BodyPublishers.ofString(GSON.toJson(team)))
+            .POST(HttpRequest.BodyPublishers.ofString(RestUtilConstants.JSON_MAPPER.writeValueAsString(team)))
             .uri(URI.create(FOLDING_URL + "/teams"))
             .header(RestHeader.CONTENT_TYPE.headerName(), ContentType.TEXT.contentTypeValue())
             .header(RestHeader.AUTHORIZATION.headerName(), encodeBasicAuthentication(ADMIN_USER.userName(), ADMIN_USER.password()))

@@ -22,8 +22,15 @@ import net.zodac.folding.api.tc.User;
 import net.zodac.folding.rest.api.tc.UserSummary;
 
 /**
- * POJO for the {@link User} {@link Category} leaderboard, summarising
- * the stats for a {@link User} in a {@link Category}.
+ * POJO for the {@link User} {@link Category} leaderboard, summarising the stats for a {@link User} in a {@link Category}.
+ *
+ * @param user             the {@link User}
+ * @param points           the {@link User}'s points
+ * @param multipliedPoints the {@link User}'s multipliedPoints
+ * @param units            the {@link User}'s units
+ * @param rank             the {@link User}'s rank within the {@link Category}
+ * @param diffToLeader     the number of {@code multipliedPoints} this {@link User} is away from the leader
+ * @param diffToNext       the number of {@code multipliedPoints} this {@link User} is away from next highest ranked {@link User}
  */
 public record UserCategoryLeaderboardEntry(User user,
                                            long points,

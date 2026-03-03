@@ -17,7 +17,7 @@
 
 package net.zodac.folding.api.tc.lars;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Collection;
 
 /**
@@ -41,6 +41,6 @@ import java.util.Collection;
  * @param rankedGpus the {@link Collection} of {@link LarsGpu}s included in the {@link LarsGpuResponse}
  * @see <a href="https://folding.lar.systems/api/gpu_ppd/gpu_rank_list.json">LARS GPU PPD database API</a>
  */
-public record LarsGpuResponse(@SerializedName("folding_at_home_gpu_ppd_rank_list") Collection<LarsGpu> rankedGpus) {
+public record LarsGpuResponse(@JsonProperty("folding_at_home_gpu_ppd_rank_list") Collection<LarsGpu> rankedGpus) {
 
 }

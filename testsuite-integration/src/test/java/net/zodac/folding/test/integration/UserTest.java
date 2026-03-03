@@ -18,7 +18,6 @@
 package net.zodac.folding.test.integration;
 
 import static net.zodac.folding.api.util.EncodingUtils.encodeBasicAuthentication;
-import static net.zodac.folding.rest.api.util.RestUtilConstants.GSON;
 import static net.zodac.folding.rest.api.util.RestUtilConstants.HTTP_CLIENT;
 import static net.zodac.folding.test.integration.util.DummyAuthenticationData.ADMIN_USER;
 import static net.zodac.folding.test.integration.util.DummyAuthenticationData.INVALID_PASSWORD;
@@ -33,6 +32,7 @@ import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 import net.zodac.folding.api.tc.Category;
 import net.zodac.folding.api.tc.Hardware;
@@ -48,6 +48,7 @@ import net.zodac.folding.rest.api.header.RestHeader;
 import net.zodac.folding.rest.api.tc.request.HardwareRequest;
 import net.zodac.folding.rest.api.tc.request.TeamRequest;
 import net.zodac.folding.rest.api.tc.request.UserRequest;
+import net.zodac.folding.rest.api.util.RestUtilConstants;
 import net.zodac.folding.test.integration.util.DummyDataGenerator;
 import net.zodac.folding.test.integration.util.PasskeyChecker;
 import net.zodac.folding.test.integration.util.SystemCleaner;
@@ -171,7 +172,7 @@ class UserTest {
             .as("Did not receive a 200_OK HTTP response: %s", response.body())
             .isEqualTo(HttpURLConnection.HTTP_OK);
 
-        final User user = UserResponseParser.get(response);
+        final User user = Objects.requireNonNull(UserResponseParser.get(response));
         assertThat(user.id())
             .as("Did not receive the expected user: %s", response.body())
             .isEqualTo(userId);
@@ -187,7 +188,7 @@ class UserTest {
             .as("Did not receive a 200_OK HTTP response: %s", response.body())
             .isEqualTo(HttpURLConnection.HTTP_OK);
 
-        final User user = UserResponseParser.get(response);
+        final User user = Objects.requireNonNull(UserResponseParser.get(response));
         assertThat(user.id())
             .as("Did not receive the expected user: %s", response.body())
             .isEqualTo(userId);
@@ -362,7 +363,7 @@ class UserTest {
         StubbedFoldingEndpointUtils.enableUser(userToUpdate);
 
         final HttpRequest request = HttpRequest.newBuilder()
-            .PUT(HttpRequest.BodyPublishers.ofString(GSON.toJson(userToUpdate)))
+            .PUT(HttpRequest.BodyPublishers.ofString(RestUtilConstants.JSON_MAPPER.writeValueAsString(userToUpdate)))
             .uri(URI.create(TestConstants.FOLDING_URL + "/users/" + TestConstants.INVALID_FORMAT_ID))
             .header(RestHeader.CONTENT_TYPE.headerName(), ContentType.JSON.contentTypeValue())
             .header(RestHeader.AUTHORIZATION.headerName(), encodeBasicAuthentication(ADMIN_USER.userName(), ADMIN_USER.password()))
@@ -487,7 +488,7 @@ class UserTest {
 
         assertThat(UserResponseParser.getAll(cachedResponse))
             .as("Expected cached response to have the same content as the non-cached response")
-            .isNull();
+            .isEmpty();
     }
 
     @Test
@@ -509,7 +510,7 @@ class UserTest {
 
         assertThat(UserResponseParser.getAll(cachedResponse))
             .as("Expected cached response to have the same content as the non-cached response")
-            .isNull();
+            .isEmpty();
     }
 
     @Test
@@ -519,7 +520,7 @@ class UserTest {
         StubbedFoldingEndpointUtils.enableUser(userToCreate);
 
         final HttpRequest request = HttpRequest.newBuilder()
-            .POST(HttpRequest.BodyPublishers.ofString(GSON.toJson(userToCreate)))
+            .POST(HttpRequest.BodyPublishers.ofString(RestUtilConstants.JSON_MAPPER.writeValueAsString(userToCreate)))
             .uri(URI.create(TestConstants.FOLDING_URL + "/users"))
             .header(RestHeader.CONTENT_TYPE.headerName(), ContentType.JSON.contentTypeValue())
             .build();
@@ -549,7 +550,7 @@ class UserTest {
         StubbedFoldingEndpointUtils.enableUser(userToUpdate);
 
         final HttpRequest request = HttpRequest.newBuilder()
-            .PUT(HttpRequest.BodyPublishers.ofString(GSON.toJson(userToUpdate)))
+            .PUT(HttpRequest.BodyPublishers.ofString(RestUtilConstants.JSON_MAPPER.writeValueAsString(userToUpdate)))
             .uri(URI.create(TestConstants.FOLDING_URL + "/users/" + createdUser.id()))
             .header(RestHeader.CONTENT_TYPE.headerName(), ContentType.JSON.contentTypeValue())
             .build();
@@ -663,7 +664,7 @@ class UserTest {
 
     @Test
     void whenUpdatingUser_andOptionalFieldIsEmptyString_thenValueShouldBeNullNotEmpty() throws FoldingRestException {
-        final User createdUser = UserUtils.create(DummyDataGenerator.generateUserWithLiveStatsLink("http://google.com"));
+        final User createdUser = UserUtils.create(DummyDataGenerator.generateUserWithLiveStatsLink("https://google.com"));
 
         final UserRequest userToUpdate = generateUserRequest(
             createdUser.foldingUserName(),
@@ -779,7 +780,7 @@ class UserTest {
         throws FoldingRestException {
         final User existingCaptain = UserUtils.create(DummyDataGenerator.generateCaptain());
 
-        final User retrievedExistingCaptain = UserResponseParser.get(USER_REQUEST_SENDER.get(existingCaptain.id()));
+        final User retrievedExistingCaptain = Objects.requireNonNull(UserResponseParser.get(USER_REQUEST_SENDER.get(existingCaptain.id())));
         assertThat(retrievedExistingCaptain.role().isCaptain())
             .as("Expected existing user to be captain")
             .isTrue();
@@ -797,20 +798,19 @@ class UserTest {
             true
         ));
 
-        final User retrievedOldCaptain = UserResponseParser.get(USER_REQUEST_SENDER.get(existingCaptain.id()));
+        final User retrievedOldCaptain = Objects.requireNonNull(UserResponseParser.get(USER_REQUEST_SENDER.get(existingCaptain.id())));
         assertThat(retrievedOldCaptain.role().isCaptain())
             .as("Expected original user to no longer be captain")
             .isFalse();
 
-        final User retrievedNewCaptain = UserResponseParser.get(USER_REQUEST_SENDER.get(newCaptain.id()));
+        final User retrievedNewCaptain = Objects.requireNonNull(UserResponseParser.get(USER_REQUEST_SENDER.get(newCaptain.id())));
         assertThat(retrievedNewCaptain.role().isCaptain())
             .as("Expected new user to be captain")
             .isTrue();
     }
 
     @Test
-    void whenUpdatingUser_givenUserIsCaptain_andCaptainAlreadyExistsInTeam_thenUserReplacesOldUserAsCaptain()
-        throws FoldingRestException {
+    void whenUpdatingUser_givenUserIsCaptain_andCaptainAlreadyExistsInTeam_thenUserReplacesOldUserAsCaptain() throws FoldingRestException {
         final Hardware newHardware = HardwareUtils.create(DummyDataGenerator.generateHardwareFromCategory(Category.AMD_GPU));
 
         final User existingCaptain = UserUtils.create(DummyDataGenerator.generateCaptain());
@@ -826,11 +826,11 @@ class UserTest {
             false
         ));
 
-        final User retrievedExistingCaptain = UserResponseParser.get(USER_REQUEST_SENDER.get(existingCaptain.id()));
+        final User retrievedExistingCaptain = Objects.requireNonNull(UserResponseParser.get(USER_REQUEST_SENDER.get(existingCaptain.id())));
         assertThat(retrievedExistingCaptain.role().isCaptain())
             .as("Expected existing captain to be captain")
             .isTrue();
-        final User retrievedExistingNonCaptain = UserResponseParser.get(USER_REQUEST_SENDER.get(nonCaptain.id()));
+        final User retrievedExistingNonCaptain = Objects.requireNonNull(UserResponseParser.get(USER_REQUEST_SENDER.get(nonCaptain.id())));
         assertThat(retrievedExistingNonCaptain.role().isCaptain())
             .as("Expected other user to not be captain")
             .isFalse();
@@ -847,11 +847,11 @@ class UserTest {
             true
         ));
 
-        final User retrievedOldCaptain = UserResponseParser.get(USER_REQUEST_SENDER.get(existingCaptain.id()));
+        final User retrievedOldCaptain = Objects.requireNonNull(UserResponseParser.get(USER_REQUEST_SENDER.get(existingCaptain.id())));
         assertThat(retrievedOldCaptain.role().isCaptain())
             .as("Expected original captain to no longer be captain")
             .isFalse();
-        final User retrievedNewCaptain = UserResponseParser.get(USER_REQUEST_SENDER.get(newCaptain.id()));
+        final User retrievedNewCaptain = Objects.requireNonNull(UserResponseParser.get(USER_REQUEST_SENDER.get(newCaptain.id())));
         assertThat(retrievedNewCaptain.role().isCaptain())
             .as("Expected other user to be new captain")
             .isTrue();
@@ -864,11 +864,11 @@ class UserTest {
         final User firstTeamCaptain = UserUtils.create(DummyDataGenerator.generateCaptain());
         final User secondTeamCaptain = UserUtils.create(DummyDataGenerator.generateCaptain());
 
-        final User retrievedFirstTeamCaptain = UserResponseParser.get(USER_REQUEST_SENDER.get(firstTeamCaptain.id()));
+        final User retrievedFirstTeamCaptain = Objects.requireNonNull(UserResponseParser.get(USER_REQUEST_SENDER.get(firstTeamCaptain.id())));
         assertThat(retrievedFirstTeamCaptain.role().isCaptain())
             .as("Expected user of first team to be captain")
             .isTrue();
-        final User retrievedSecondTeamCaptain = UserResponseParser.get(USER_REQUEST_SENDER.get(secondTeamCaptain.id()));
+        final User retrievedSecondTeamCaptain = Objects.requireNonNull(UserResponseParser.get(USER_REQUEST_SENDER.get(secondTeamCaptain.id())));
         assertThat(retrievedSecondTeamCaptain.role().isCaptain())
             .as("Expected user of second team to be captain")
             .isTrue();
@@ -885,11 +885,12 @@ class UserTest {
             firstTeamCaptain.role().isCaptain()
         ));
 
-        final User retrievedSecondTeamNewCaptain = UserResponseParser.get(USER_REQUEST_SENDER.get(firstUserMovingToSecondTeam.id()));
+        final User retrievedSecondTeamNewCaptain =
+            Objects.requireNonNull(UserResponseParser.get(USER_REQUEST_SENDER.get(firstUserMovingToSecondTeam.id())));
         assertThat(retrievedSecondTeamNewCaptain.role().isCaptain())
             .as("Expected moved user to be captain of new team")
             .isTrue();
-        final User retrievedSecondTeamOldCaptain = UserResponseParser.get(USER_REQUEST_SENDER.get(secondTeamCaptain.id()));
+        final User retrievedSecondTeamOldCaptain = Objects.requireNonNull(UserResponseParser.get(USER_REQUEST_SENDER.get(secondTeamCaptain.id())));
         assertThat(retrievedSecondTeamOldCaptain.role().isCaptain())
             .as("Expected old captain of team to no longer be captain")
             .isFalse();
@@ -901,7 +902,7 @@ class UserTest {
         StubbedFoldingEndpointUtils.enableUser(userToCreate);
 
         final HttpRequest request = HttpRequest.newBuilder()
-            .POST(HttpRequest.BodyPublishers.ofString(GSON.toJson(userToCreate)))
+            .POST(HttpRequest.BodyPublishers.ofString(RestUtilConstants.JSON_MAPPER.writeValueAsString(userToCreate)))
             .uri(URI.create(TestConstants.FOLDING_URL + "/users"))
             .header(RestHeader.CONTENT_TYPE.headerName(), ContentType.TEXT.contentTypeValue())
             .header(RestHeader.AUTHORIZATION.headerName(), encodeBasicAuthentication(ADMIN_USER.userName(), ADMIN_USER.password()))

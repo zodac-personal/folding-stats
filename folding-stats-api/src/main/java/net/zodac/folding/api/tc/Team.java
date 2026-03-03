@@ -17,7 +17,10 @@
 
 package net.zodac.folding.api.tc;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import java.util.Objects;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -34,10 +37,12 @@ import org.jspecify.annotations.Nullable;
  * <p>
  * While each {@link Team} is made up of {@link User}s we do not keep any reference to the {@link User} in this class.
  */
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
 @Getter
 @Accessors(fluent = true)
 @ToString(doNotUseGetters = true)
 @EqualsAndHashCode
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public final class Team implements ResponsePojo {
 
     /**
@@ -50,21 +55,6 @@ public final class Team implements ResponsePojo {
     private final String teamName;
     private final @Nullable String teamDescription;
     private final @Nullable String forumLink;
-
-    /**
-     * Constructor.
-     *
-     * @param id              the ID
-     * @param teamName        the name of the team
-     * @param teamDescription an optional description for the team
-     * @param forumLink       a link to the {@link Team} thread on the forum
-     */
-    public Team(final int id, final String teamName, @Nullable final String teamDescription, @Nullable final String forumLink) {
-        this.id = id;
-        this.teamName = teamName;
-        this.teamDescription = teamDescription;
-        this.forumLink = forumLink;
-    }
 
     /**
      * Creates a {@link Team}.

@@ -17,21 +17,18 @@
 
 package net.zodac.folding.stats.http.response;
 
-import static net.zodac.folding.rest.api.util.RestUtilConstants.GSON;
-
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
-import java.lang.reflect.Type;
 import java.net.http.HttpResponse;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import net.zodac.folding.api.stats.FoldingStatsDetails;
+import net.zodac.folding.rest.api.util.RestUtilConstants;
 import net.zodac.folding.stats.http.request.PointsUrlBuilder;
 import net.zodac.folding.stats.http.request.StatsSender;
 import net.zodac.folding.stats.http.request.UnitsUrlBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
 
 /**
  * Utility class parsing a {@link PointsApiInstance} or {@link UnitsApiInstance} from the Stanford REST request.
@@ -59,8 +56,8 @@ public final class StatsParser {
 
     private static PointsApiInstance parsePointsResponse(final HttpResponse<String> httpResponse) {
         try {
-            return GSON.fromJson(httpResponse.body(), PointsApiInstance.class);
-        } catch (final JsonSyntaxException e) {
+            return RestUtilConstants.JSON_MAPPER.readValue(httpResponse.body(), PointsApiInstance.class);
+        } catch (final JacksonException e) {
             LOGGER.warn("Error parsing the points JSON response from the API: '{}'", httpResponse.body(), e);
             throw e;
         } catch (final Exception e) {
@@ -104,9 +101,8 @@ public final class StatsParser {
 
     private static List<UnitsApiInstance> parseUnitsResponse(final HttpResponse<String> httpResponse) {
         try {
-            final Type collectionType = UnitsApiInstanceCollectionType.getInstance().getType();
-            return GSON.fromJson(httpResponse.body(), collectionType);
-        } catch (final JsonSyntaxException e) {
+            return RestUtilConstants.JSON_MAPPER.readValue(httpResponse.body(), new UnitsApiInstanceCollectionType());
+        } catch (final JacksonException e) {
             LOGGER.warn("Error parsing the units JSON response from the API: '{}'", httpResponse.body(), e);
             throw e;
         } catch (final Exception e) {
@@ -116,20 +112,7 @@ public final class StatsParser {
         }
     }
 
-    /**
-     * Private class defining the {@link Collection} for {@link UnitsApiInstance}s.
-     */
-    private static final class UnitsApiInstanceCollectionType extends TypeToken<Collection<UnitsApiInstance>> {
+    private static final class UnitsApiInstanceCollectionType extends TypeReference<List<UnitsApiInstance>> {
 
-        private static final UnitsApiInstanceCollectionType INSTANCE = new UnitsApiInstanceCollectionType();
-
-        /**
-         * Retrieve a singleton instance of {@link UnitsApiInstanceCollectionType}.
-         *
-         * @return {@link UnitsApiInstanceCollectionType} instance.
-         */
-        static UnitsApiInstanceCollectionType getInstance() {
-            return INSTANCE;
-        }
     }
 }

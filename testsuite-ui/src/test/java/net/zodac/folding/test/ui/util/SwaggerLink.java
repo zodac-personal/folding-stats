@@ -25,12 +25,12 @@ public enum SwaggerLink {
     /**
      * The URL for the Swagger API JSON.
      */
-    SWAGGER_DOCS_URL("http://backend-dev:8443/folding/api-docs"),
+    SWAGGER_DOCS_URL("http://backend-dev:8443/folding/v3/api-docs"),
 
     /**
      * The URL for the Swagger API JSON for the {@code FoldingStats} project.
      */
-    SWAGGER_DOCS_PROJECT_URL("http://backend-dev:8443/folding/api-docs/FoldingStats"),
+    SWAGGER_DOCS_PROJECT_URL("http://backend-dev:8443/folding/v3/api-docs/FoldingStats"),
 
     /**
      * The URL for the Swagger UI.

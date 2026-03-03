@@ -18,7 +18,6 @@
 package net.zodac.folding.test.integration.util.rest.request;
 
 import static net.zodac.folding.api.util.EncodingUtils.encodeBasicAuthentication;
-import static net.zodac.folding.rest.api.util.RestUtilConstants.GSON;
 import static net.zodac.folding.test.integration.util.DummyAuthenticationData.ADMIN_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -84,7 +83,7 @@ public final class LarsUtils {
 
     private static void addGpuToLarsDb(final LarsGpu larsGpu) throws FoldingRestException {
         final HttpRequest request = HttpRequest.newBuilder()
-            .POST(HttpRequest.BodyPublishers.ofString(GSON.toJson(larsGpu, LarsGpu.class)))
+            .POST(HttpRequest.BodyPublishers.ofString(RestUtilConstants.JSON_MAPPER.writeValueAsString(larsGpu)))
             .uri(URI.create(TestConstants.FOLDING_URL + "/api/gpu_ppd"))
             .header(RestHeader.CONTENT_TYPE.headerName(), ContentType.JSON.contentTypeValue())
             .build();

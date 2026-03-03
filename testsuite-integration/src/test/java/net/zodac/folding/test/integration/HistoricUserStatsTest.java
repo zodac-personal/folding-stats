@@ -181,7 +181,7 @@ class HistoricUserStatsTest {
 
         assertThat(HistoricStatsResponseParser.getHourlyUserStats(cachedResponse))
             .as("Expected cached response to have the same content as the non-cached response")
-            .isNull();
+            .isEmpty();
     }
 
     @Test
@@ -330,7 +330,7 @@ class HistoricUserStatsTest {
 
         assertThat(HistoricStatsResponseParser.getDailyUserStats(cachedResponse))
             .as("Expected cached response to have the same content as the non-cached response")
-            .isNull();
+            .isEmpty();
     }
 
     @Test
@@ -490,7 +490,7 @@ class HistoricUserStatsTest {
 
         assertThat(HistoricStatsResponseParser.getMonthlyUserStats(cachedResponse))
             .as("Expected cached response to have the same content as the non-cached response")
-            .isNull();
+            .isEmpty();
     }
 
     @Test

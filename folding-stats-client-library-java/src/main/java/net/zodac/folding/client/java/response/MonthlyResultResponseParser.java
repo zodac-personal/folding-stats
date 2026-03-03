@@ -41,6 +41,6 @@ public final class MonthlyResultResponseParser {
      * @return the retrieved {@link MonthlyResult}
      */
     public static MonthlyResult getMonthlyResult(final HttpResponse<String> response) {
-        return RestUtilConstants.GSON.fromJson(response.body(), MonthlyResult.class);
+        return RestUtilConstants.JSON_MAPPER.readValue(response.body(), MonthlyResult.class);
     }
 }

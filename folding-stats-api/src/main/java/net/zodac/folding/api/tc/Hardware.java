@@ -17,6 +17,7 @@
 
 package net.zodac.folding.api.tc;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -40,11 +41,12 @@ import net.zodac.folding.rest.api.tc.request.HardwareRequest;
  *
  * @see <a href="https://https://folding.lar.systems/">LARS PPD database</a>
  */
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
 @Getter
 @Accessors(fluent = true)
 @ToString(doNotUseGetters = true)
 @EqualsAndHashCode
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public final class Hardware implements Comparable<Hardware>, ResponsePojo {
 
     /**
@@ -154,7 +156,7 @@ public final class Hardware implements Comparable<Hardware>, ResponsePojo {
     }
 
     @Override
-    public int compareTo(final Hardware other) { // NOPMD - OverrideBothEqualsAndHashCodeOnComparable: Lombok is being used for this
+    public int compareTo(final Hardware other) {
         // First, compare displayName
         final int displayNameComparison = displayName.compareTo(other.displayName);
         if (displayNameComparison != 0) {

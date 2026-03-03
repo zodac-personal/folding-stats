@@ -41,68 +41,70 @@
 
         <!-- 3PP Versions -->
         <caffeine.version>3.2.3</caffeine.version>
-        <gson.version>2.13.2</gson.version>
         <hikariCP.version>7.0.2</hikariCP.version>
+        <jackson-annotations.version>2.21</jackson-annotations.version>
+        <jackson-core.version>3.1.0</jackson-core.version>
+        <jackson-databind.version>3.1.0</jackson-databind.version>
         <jakarta.jakartaee-web-api.version>11.0.0</jakarta.jakartaee-web-api.version>
-        <jersey-server.version>4.0.0</jersey-server.version>
-        <jooq.version>3.20.9</jooq.version>
-        <log4j.version>2.25.2</log4j.version>
+        <jersey-server.version>4.0.2</jersey-server.version>
+        <jooq.version>3.20.11</jooq.version>
+        <log4j.version>2.25.3</log4j.version>
         <lombok.version>1.18.42</lombok.version>
-        <micrometer.version>1.16.0</micrometer.version>
-        <postgresql.version>42.7.8</postgresql.version>
+        <micrometer.version>1.16.3</micrometer.version>
+        <postgresql.version>42.7.10</postgresql.version>
         <resilience4j.version>2.3.0</resilience4j.version>
-        <snakeyaml.version>2.5</snakeyaml.version>
-        <spring-boot.version>3.5.8</spring-boot.version>
-        <springdoc-openapi-starter-webmvc-ui.version>2.8.14</springdoc-openapi-starter-webmvc-ui.version>
+        <spring-boot.version>4.0.3</spring-boot.version>
+        <springdoc-openapi-starter-webmvc-ui.version>3.0.2</springdoc-openapi-starter-webmvc-ui.version>
         <slf4j-api.version>2.0.17</slf4j-api.version>
         <slf4j-impl.version>2.0.17</slf4j-impl.version>
-        <swagger-annotations-jakarta.version>2.2.40</swagger-annotations-jakarta.version>
+        <swagger-annotations-jakarta.version>2.2.44</swagger-annotations-jakarta.version>
+        <swagger-core-jakarta.version>2.2.44</swagger-core-jakarta.version>
 
         <!-- Test 3PP Versions -->
-        <assertj-core.version>3.27.6</assertj-core.version>
-        <embedded-postgres.version>2.2.0</embedded-postgres.version>
-        <embedded-postgres-binaries-bom.version>18.1.0</embedded-postgres-binaries-bom.version>
-        <flyway-core.version>11.17.1</flyway-core.version>
-        <junit-bom.version>6.0.1</junit-bom.version>
-        <selenium-java.version>4.38.0</selenium-java.version>
+        <assertj-core.version>3.27.7</assertj-core.version>
+        <embedded-postgres.version>2.2.2</embedded-postgres.version>
+        <embedded-postgres-binaries-bom.version>18.3.0</embedded-postgres-binaries-bom.version>
+        <flyway-core.version>12.0.3</flyway-core.version>
+        <junit-bom.version>6.0.3</junit-bom.version>
+        <selenium-java.version>4.41.0</selenium-java.version>
 
         <!-- Plugin Versions -->
         <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
         <jmeter-maven-plugin.version>3.8.0</jmeter-maven-plugin.version>
         <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
-        <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
-        <maven-dependency-plugin.version>3.9.0</maven-dependency-plugin.version>
+        <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+        <maven-dependency-plugin.version>3.10.0</maven-dependency-plugin.version>
         <maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
-        <maven-failsafe-plugin.version>3.5.4</maven-failsafe-plugin.version>
+        <maven-failsafe-plugin.version>3.5.5</maven-failsafe-plugin.version>
         <maven-install-plugin.version>3.1.4</maven-install-plugin.version>
         <maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
         <maven-project-info-reports-plugin.version>3.9.0</maven-project-info-reports-plugin.version>
-        <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+        <maven-resources-plugin.version>3.4.0</maven-resources-plugin.version>
         <maven-site-plugin.version>3.21.0</maven-site-plugin.version>
-        <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
-        <versions-maven-plugin.version>2.19.1</versions-maven-plugin.version>
+        <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
+        <versions-maven-plugin.version>2.21.0</versions-maven-plugin.version>
 
         <!-- Linter 3PP Versions -->
-        <asm-version>9.9</asm-version>
-        <checkstyle.version>12.1.2</checkstyle.version>
-        <error_prone_core.version>2.44.0</error_prone_core.version>
+        <asm-version>9.9.1</asm-version>
+        <checkstyle.version>13.3.0</checkstyle.version>
+        <error_prone_core.version>2.48.0</error_prone_core.version>
         <jspecify.version>1.0.0</jspecify.version>
         <licenses.version>1</licenses.version>
-        <nullaway.version>0.12.12</nullaway.version>
+        <nullaway.version>0.13.1</nullaway.version>
         <pitest-junit5-plugin.version>1.2.3</pitest-junit5-plugin.version>
-        <pmd.version>7.18.0</pmd.version>
+        <pmd.version>7.22.0</pmd.version>
         <spotbugs.version>4.9.8</spotbugs.version>
 
         <!-- Linter Plugin Versions -->
-        <dependency-check-maven.version>12.1.9</dependency-check-maven.version>
+        <dependency-check-maven.version>12.2.0</dependency-check-maven.version>
         <license-maven-plugin.version>5.0.0</license-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
         <maven-pmd-plugin.version>3.28.0</maven-pmd-plugin.version>
-        <pitest-maven.version>1.22.0</pitest-maven.version>
-        <sonar-maven-plugin.version>5.3.0.6276</sonar-maven-plugin.version>
-        <spotbugs-maven-plugin.version>4.9.8.1</spotbugs-maven-plugin.version>
+        <pitest-maven.version>1.22.1</pitest-maven.version>
+        <sonar-maven-plugin.version>5.5.0.6356</sonar-maven-plugin.version>
+        <spotbugs-maven-plugin.version>4.9.8.2</spotbugs-maven-plugin.version>
 
         <!-- Linter Properties -->
         <!--suppress UnresolvedMavenProperty, files are only used in child modules -->
@@ -152,13 +154,6 @@
                 <groupId>com.github.ben-manes.caffeine</groupId>
                 <artifactId>caffeine</artifactId>
                 <version>${caffeine.version}</version>
-                <exclusions>
-                    <!-- Conflicts with version in gson, this one is older and less important -->
-                    <exclusion>
-                        <groupId>com.google.errorprone</groupId>
-                        <artifactId>error_prone_annotations</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <!-- Included so the dependency is picked up by 'mvn versions:update-properties', not actually used -->
             <dependency>
@@ -168,14 +163,24 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>${gson.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.zaxxer</groupId>
                 <artifactId>HikariCP</artifactId>
                 <version>${hikariCP.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson-annotations.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>tools.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>tools.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson-databind.version}</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.platform</groupId>
@@ -238,6 +243,12 @@
                 <groupId>io.github.resilience4j</groupId>
                 <artifactId>resilience4j-core</artifactId>
                 <version>${resilience4j.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.jetbrains.kotlin</groupId>
+                        <artifactId>kotlin-stdlib-jdk8</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>io.github.resilience4j</groupId>
@@ -248,21 +259,14 @@
             <!-- Spring Dependencies -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter</artifactId>
-                <version>${spring-boot.version}</version>
-                <exclusions>
-                    <!-- Remove built-in logging and use own -->
-                    <exclusion>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-starter-logging</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-actuator</artifactId>
                 <version>${spring-boot.version}</version>
                 <exclusions>
+                    <!-- Deprecated -->
+                    <exclusion>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter</artifactId>
+                    </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
@@ -270,10 +274,12 @@
                 <artifactId>spring-boot-actuator-autoconfigure</artifactId>
                 <version>${spring-boot.version}</version>
                 <exclusions>
+                    <!-- Imported explicitly -->
                     <exclusion>
                         <groupId>com.fasterxml.jackson.core</groupId>
                         <artifactId>jackson-databind</artifactId>
                     </exclusion>
+                    <!-- Not used, can import explicitly if needed -->
                     <exclusion>
                         <groupId>com.fasterxml.jackson.datatype</groupId>
                         <artifactId>jackson-datatype-jsr310</artifactId>
@@ -282,7 +288,31 @@
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-aop</artifactId>
+                <artifactId>spring-boot-starter-aspectj</artifactId>
+                <version>${spring-boot.version}</version>
+                <exclusions>
+                    <!-- Deprecated -->
+                    <exclusion>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-jackson</artifactId>
+                <version>${spring-boot.version}</version>
+                <exclusions>
+                    <!-- Deprecated -->
+                    <exclusion>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-log4j2</artifactId>
                 <version>${spring-boot.version}</version>
             </dependency>
             <dependency>
@@ -295,16 +325,34 @@
                         <groupId>org.springframework</groupId>
                         <artifactId>*</artifactId>
                     </exclusion>
+                    <!-- Deprecated -->
+                    <exclusion>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter</artifactId>
+                    </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-web</artifactId>
+                <artifactId>spring-boot-starter-webmvc</artifactId>
                 <version>${spring-boot.version}</version>
                 <exclusions>
+                    <!-- Remove Logback so we can use Log4j -->
                     <exclusion>
                         <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-starter-json</artifactId>
+                        <artifactId>spring-boot-starter-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-common</artifactId>
+                <version>${springdoc-openapi-starter-webmvc-ui.version}</version>
+                <exclusions>
+                    <!-- Removing Jackson, brought in explicitly -->
+                    <exclusion>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-jackson</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -313,19 +361,10 @@
                 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
                 <version>${springdoc-openapi-starter-webmvc-ui.version}</version>
                 <exclusions>
-                    <!-- Removing SLF4J, not needed for annotations -->
+                    <!-- Removing SLF4J -->
                     <exclusion>
                         <groupId>org.slf4j</groupId>
                         <artifactId>slf4j-api</artifactId>
-                    </exclusion>
-                    <!-- Brought in by spring-boot-starter-web -->
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>spring-webmvc</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-autoconfigure</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -333,6 +372,18 @@
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-annotations-jakarta</artifactId>
                 <version>${swagger-annotations-jakarta.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-core-jakarta</artifactId>
+                <version>${swagger-core-jakarta.version}</version>
+                <exclusions>
+                    <!-- Remove Jackson v2 dependency, project uses v3 -->
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <!-- Test Dependencies -->
@@ -389,31 +440,19 @@
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j-api.version}</version>
             </dependency>
-            <!-- Used by [springdoc-openapi-starter-webmvc-ui:jackson-dataformat-yaml, springdoc-openapi-starter-webmvc-ui:swagger-core-jakarta] -->
-            <!-- Setting to latest available -->
+            <!-- Used by [spring-boot-starter-actuator] and multiple transitive dependencies of [springdoc-openapi-starter-webmvc-ui] -->
+            <!-- Setting to latest dependency version -->
             <dependency>
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
-                <version>${snakeyaml.version}</version>
+                <version>2.5</version>
             </dependency>
-            <!-- Used by [spring-boot-starter, spring-boot-starter-actuator, spring-boot-starter-security, spring-boot-starter-web] -->
-            <!-- Setting to latest available -->
+            <!-- Used by multiple transitive dependencies of [springdoc-openapi-starter-webmvc-ui] -->
+            <!-- Setting to latest dependency version -->
             <dependency>
-                <groupId>io.micrometer</groupId>
-                <artifactId>micrometer-commons</artifactId>
-                <version>${micrometer.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.micrometer</groupId>
-                <artifactId>micrometer-observation</artifactId>
-                <version>${micrometer.version}</version>
-            </dependency>
-            <!-- Used by [spring-boot-starter-web, springdoc-openapi-starter-webmvc-ui] -->
-            <!-- Setting to version used by spring-boot-starter-web:5.5.6 -->
-            <dependency>
-                <groupId>org.apache.tomcat.embed</groupId>
-                <artifactId>tomcat-embed-el</artifactId>
-                <version>10.1.46</version>
+                <groupId>jakarta.validation</groupId>
+                <artifactId>jakarta.validation-api</artifactId>
+                <version>3.1.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -575,10 +614,10 @@
                         <generateBackupPoms>false</generateBackupPoms>
                         <ruleSet>
                             <ignoreVersions>
-                                <!-- Exclude alpha, beta, milestone and SNAPSHOT releases -->
+                                <!-- Exclude alpha, beta, milestone, RC, and SNAPSHOT releases -->
                                 <ignoreVersion>
                                     <type>regex</type>
-                                    <version>.*(-alpha|-beta|-M\d|-SNAPSHOT|-RC).*</version>
+                                    <version>.*(-alpha|-beta|-M\d|-SNAPSHOT|-RC|-rc).*</version>
                                 </ignoreVersion>
                             </ignoreVersions>
                         </ruleSet>
@@ -657,6 +696,10 @@
                         <failBuildOnCVSS>0</failBuildOnCVSS>
                         <!--suppress UnresolvedMavenProperty, injected by environment variable -->
                         <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey> <!-- Use <nvdApiServerId> to avoid this potentially being exposed in mvn output -->
+                        <!--suppress UnresolvedMavenProperty, injected by environment variable -->
+                        <ossIndexUsername>${env.DEPENDENCY_CHECK_OSS_USERNAME}</ossIndexUsername>
+                        <!--suppress UnresolvedMavenProperty, injected by environment variable -->
+                        <ossIndexPassword>${env.DEPENDENCY_CHECK_OSS_PASSWORD}</ossIndexPassword>
                         <skip>${skip-linters}</skip>
                         <skipProvidedScope>true</skipProvidedScope>
                         <suppressionFiles>

@@ -17,8 +17,6 @@
 
 package net.zodac.folding.client.java.response;
 
-import com.google.gson.reflect.TypeToken;
-import java.lang.reflect.Type;
 import java.net.http.HttpResponse;
 import java.util.Collection;
 import java.util.List;
@@ -30,6 +28,7 @@ import net.zodac.folding.rest.api.tc.UserSummary;
 import net.zodac.folding.rest.api.tc.leaderboard.TeamLeaderboardEntry;
 import net.zodac.folding.rest.api.tc.leaderboard.UserCategoryLeaderboardEntry;
 import net.zodac.folding.rest.api.util.RestUtilConstants;
+import tools.jackson.core.type.TypeReference;
 
 /**
  * Utility class used to parse a {@link HttpResponse} returned from {@link TeamCompetitionStatsRequestSender}.
@@ -47,7 +46,7 @@ public final class TeamCompetitionStatsResponseParser {
      * @return the retrieved {@link AllTeamsSummary}
      */
     public static AllTeamsSummary getStats(final HttpResponse<String> response) {
-        return RestUtilConstants.GSON.fromJson(response.body(), AllTeamsSummary.class);
+        return RestUtilConstants.JSON_MAPPER.readValue(response.body(), AllTeamsSummary.class);
     }
 
     /**
@@ -57,7 +56,7 @@ public final class TeamCompetitionStatsResponseParser {
      * @return the retrieved {@link CompetitionSummary}
      */
     public static CompetitionSummary getSummaryStats(final HttpResponse<String> response) {
-        return RestUtilConstants.GSON.fromJson(response.body(), CompetitionSummary.class);
+        return RestUtilConstants.JSON_MAPPER.readValue(response.body(), CompetitionSummary.class);
     }
 
     /**
@@ -67,7 +66,7 @@ public final class TeamCompetitionStatsResponseParser {
      * @return the retrieved {@link UserSummary}
      */
     public static UserSummary getStatsForUser(final HttpResponse<String> response) {
-        return RestUtilConstants.GSON.fromJson(response.body(), UserSummary.class);
+        return RestUtilConstants.JSON_MAPPER.readValue(response.body(), UserSummary.class);
     }
 
     /**
@@ -77,8 +76,7 @@ public final class TeamCompetitionStatsResponseParser {
      * @return the retrieved {@link TeamLeaderboardEntry}s
      */
     public static Collection<TeamLeaderboardEntry> getTeamLeaderboard(final HttpResponse<String> response) {
-        final Type collectionType = TeamLeaderboardEntryCollectionType.getInstance().getType();
-        return RestUtilConstants.GSON.fromJson(response.body(), collectionType);
+        return RestUtilConstants.JSON_MAPPER.readValue(response.body(), new TeamLeaderboardEntryCollectionType());
     }
 
     /**
@@ -88,41 +86,14 @@ public final class TeamCompetitionStatsResponseParser {
      * @return the retrieved {@link UserCategoryLeaderboardEntry}s
      */
     public static Map<String, List<UserCategoryLeaderboardEntry>> getCategoryLeaderboard(final HttpResponse<String> response) {
-        final Type collectionType = UserCategoryLeaderboardEntryMapType.getInstance().getType();
-        return RestUtilConstants.GSON.fromJson(response.body(), collectionType);
+        return RestUtilConstants.JSON_MAPPER.readValue(response.body(), new UserCategoryLeaderboardEntryMapType());
     }
 
-    /**
-     * Private class defining the {@link Collection} for {@link TeamLeaderboardEntry}s.
-     */
-    private static final class TeamLeaderboardEntryCollectionType extends TypeToken<Collection<TeamLeaderboardEntry>> {
+    private static final class TeamLeaderboardEntryCollectionType extends TypeReference<List<TeamLeaderboardEntry>> {
 
-        private static final TeamLeaderboardEntryCollectionType INSTANCE = new TeamLeaderboardEntryCollectionType();
-
-        /**
-         * Retrieve a singleton instance of {@link TeamLeaderboardEntryCollectionType}.
-         *
-         * @return {@link TeamLeaderboardEntryCollectionType} instance.
-         */
-        static TeamLeaderboardEntryCollectionType getInstance() {
-            return INSTANCE;
-        }
     }
 
-    /**
-     * Private class defining the {@link Map} for {@link UserCategoryLeaderboardEntry}s.
-     */
-    private static final class UserCategoryLeaderboardEntryMapType extends TypeToken<Map<String, List<UserCategoryLeaderboardEntry>>> {
+    private static final class UserCategoryLeaderboardEntryMapType extends TypeReference<Map<String, List<UserCategoryLeaderboardEntry>>> {
 
-        private static final UserCategoryLeaderboardEntryMapType INSTANCE = new UserCategoryLeaderboardEntryMapType();
-
-        /**
-         * Retrieve a singleton instance of {@link UserCategoryLeaderboardEntryMapType}.
-         *
-         * @return {@link UserCategoryLeaderboardEntryMapType} instance.
-         */
-        static UserCategoryLeaderboardEntryMapType getInstance() {
-            return INSTANCE;
-        }
     }
 }

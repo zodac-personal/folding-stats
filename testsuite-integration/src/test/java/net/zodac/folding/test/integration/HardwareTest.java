@@ -18,7 +18,6 @@
 package net.zodac.folding.test.integration;
 
 import static net.zodac.folding.api.util.EncodingUtils.encodeBasicAuthentication;
-import static net.zodac.folding.rest.api.util.RestUtilConstants.GSON;
 import static net.zodac.folding.rest.api.util.RestUtilConstants.HTTP_CLIENT;
 import static net.zodac.folding.test.integration.util.DummyAuthenticationData.ADMIN_USER;
 import static net.zodac.folding.test.integration.util.DummyAuthenticationData.INVALID_PASSWORD;
@@ -33,6 +32,7 @@ import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Collection;
+import java.util.Objects;
 import net.zodac.folding.api.tc.Hardware;
 import net.zodac.folding.api.tc.HardwareMake;
 import net.zodac.folding.api.tc.HardwareType;
@@ -42,6 +42,7 @@ import net.zodac.folding.rest.api.header.ContentType;
 import net.zodac.folding.rest.api.header.RestHeader;
 import net.zodac.folding.rest.api.tc.request.HardwareRequest;
 import net.zodac.folding.rest.api.tc.request.UserRequest;
+import net.zodac.folding.rest.api.util.RestUtilConstants;
 import net.zodac.folding.test.integration.util.DummyDataGenerator;
 import net.zodac.folding.test.integration.util.SystemCleaner;
 import net.zodac.folding.test.integration.util.TestConstants;
@@ -58,6 +59,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 /**
  * Tests for the {@link Hardware} REST endpoint at {@code /folding/hardware}.
  */
+// TODO: Have a precheck that failes the entire suite if there is no connection
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class HardwareTest {
 
@@ -132,7 +134,7 @@ class HardwareTest {
             .as("Did not receive a 200_OK HTTP response: %s", response.body())
             .isEqualTo(HttpURLConnection.HTTP_OK);
 
-        final Hardware hardware = HardwareResponseParser.get(response);
+        final Hardware hardware = Objects.requireNonNull(HardwareResponseParser.get(response));
         assertThat(hardware.id())
             .as("Did not receive the expected hardware: %s", response.body())
             .isEqualTo(hardwareId);
@@ -147,7 +149,7 @@ class HardwareTest {
             .as("Did not receive a 200_OK HTTP response: %s", response.body())
             .isEqualTo(HttpURLConnection.HTTP_OK);
 
-        final Hardware hardware = HardwareResponseParser.get(response);
+        final Hardware hardware = Objects.requireNonNull(HardwareResponseParser.get(response));
         assertThat(hardware.hardwareName())
             .as("Did not receive the expected hardware: %s", response.body())
             .isEqualTo(hardwareName);
@@ -312,7 +314,7 @@ class HardwareTest {
         );
 
         final HttpRequest request = HttpRequest.newBuilder()
-            .PUT(HttpRequest.BodyPublishers.ofString(GSON.toJson(updatedHardware)))
+            .PUT(HttpRequest.BodyPublishers.ofString(RestUtilConstants.JSON_MAPPER.writeValueAsString(updatedHardware)))
             .uri(URI.create(TestConstants.FOLDING_URL + "/hardware/" + TestConstants.INVALID_FORMAT_ID))
             .header(RestHeader.CONTENT_TYPE.headerName(), ContentType.JSON.contentTypeValue())
             .header(RestHeader.AUTHORIZATION.headerName(), encodeBasicAuthentication(ADMIN_USER.userName(), ADMIN_USER.password()))
@@ -436,7 +438,7 @@ class HardwareTest {
 
         assertThat(HardwareResponseParser.getAll(cachedResponse))
             .as("Expected cached response to have the same content as the non-cached response")
-            .isNull();
+            .isEmpty();
     }
 
     @Test
@@ -444,7 +446,7 @@ class HardwareTest {
         final HardwareRequest hardwareToCreate = DummyDataGenerator.generateHardware();
 
         final HttpRequest request = HttpRequest.newBuilder()
-            .POST(HttpRequest.BodyPublishers.ofString(GSON.toJson(hardwareToCreate)))
+            .POST(HttpRequest.BodyPublishers.ofString(RestUtilConstants.JSON_MAPPER.writeValueAsString(hardwareToCreate)))
             .uri(URI.create(TestConstants.FOLDING_URL + "/hardware"))
             .header(RestHeader.CONTENT_TYPE.headerName(), ContentType.JSON.contentTypeValue())
             .build();
@@ -469,7 +471,7 @@ class HardwareTest {
         );
 
         final HttpRequest request = HttpRequest.newBuilder()
-            .PUT(HttpRequest.BodyPublishers.ofString(GSON.toJson(updatedHardware)))
+            .PUT(HttpRequest.BodyPublishers.ofString(RestUtilConstants.JSON_MAPPER.writeValueAsString(updatedHardware)))
             .uri(URI.create(TestConstants.FOLDING_URL + "/hardware/" + createdHardware.id()))
             .header(RestHeader.CONTENT_TYPE.headerName(), ContentType.JSON.contentTypeValue())
             .build();
@@ -567,7 +569,7 @@ class HardwareTest {
         final HardwareRequest hardwareToCreate = DummyDataGenerator.generateHardware();
 
         final HttpRequest request = HttpRequest.newBuilder()
-            .POST(HttpRequest.BodyPublishers.ofString(GSON.toJson(hardwareToCreate)))
+            .POST(HttpRequest.BodyPublishers.ofString(RestUtilConstants.JSON_MAPPER.writeValueAsString(hardwareToCreate)))
             .uri(URI.create(TestConstants.FOLDING_URL + "/hardware"))
             .header(RestHeader.CONTENT_TYPE.headerName(), ContentType.TEXT.contentTypeValue())
             .header(RestHeader.AUTHORIZATION.headerName(), encodeBasicAuthentication(ADMIN_USER.userName(), ADMIN_USER.password()))

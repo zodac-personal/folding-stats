@@ -17,6 +17,7 @@
 
 package net.zodac.folding.api.tc.stats;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import java.sql.Timestamp;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -32,6 +33,7 @@ import net.zodac.folding.api.util.DateTimeUtils;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @ToString(doNotUseGetters = true, callSuper = true)
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class UserStats extends Stats {
 
     private static final DateTimeUtils DATE_TIME_UTILS = DateTimeUtils.create();

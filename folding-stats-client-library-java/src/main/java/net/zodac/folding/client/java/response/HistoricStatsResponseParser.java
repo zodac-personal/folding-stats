@@ -17,15 +17,15 @@
 
 package net.zodac.folding.client.java.response;
 
-import com.google.gson.reflect.TypeToken;
-import java.lang.reflect.Type;
 import java.net.http.HttpResponse;
 import java.time.Month;
 import java.time.Year;
 import java.util.Collection;
+import java.util.List;
 import net.zodac.folding.client.java.request.HistoricStatsRequestSender;
 import net.zodac.folding.rest.api.tc.historic.HistoricStats;
 import net.zodac.folding.rest.api.util.RestUtilConstants;
+import tools.jackson.core.type.TypeReference;
 
 /**
  * Utility class used to parse a {@link HttpResponse} returned from {@link HistoricStatsRequestSender}.
@@ -103,24 +103,14 @@ public final class HistoricStatsResponseParser {
     }
 
     private static Collection<HistoricStats> convertHistoricStats(final String responseBody) {
-        final Type collectionType = HistoricStatsCollectionType.getInstance().getType();
-        return RestUtilConstants.GSON.fromJson(responseBody, collectionType);
+        if (responseBody == null || responseBody.isBlank()) {
+            return List.of();
+        }
+
+        return RestUtilConstants.JSON_MAPPER.readValue(responseBody, new HistoricStatsCollectionType());
     }
 
-    /**
-     * Private class defining the {@link Collection} for {@link HistoricStats}.
-     */
-    private static final class HistoricStatsCollectionType extends TypeToken<Collection<HistoricStats>> {
+    private static final class HistoricStatsCollectionType extends TypeReference<List<HistoricStats>> {
 
-        private static final HistoricStatsCollectionType INSTANCE = new HistoricStatsCollectionType();
-
-        /**
-         * Retrieve a singleton instance of {@link HistoricStatsCollectionType}.
-         *
-         * @return {@link HistoricStatsCollectionType} instance.
-         */
-        static HistoricStatsCollectionType getInstance() {
-            return INSTANCE;
-        }
     }
 }

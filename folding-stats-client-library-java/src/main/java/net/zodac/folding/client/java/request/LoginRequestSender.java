@@ -37,8 +37,7 @@ public record LoginRequestSender(String loginUrl) {
     /**
      * Create an instance of {@link LoginRequestSender}.
      *
-     * @param foldingUrl the root URL of the {@code /folding} endpoint, i.e:
-     *                   <pre>http://127.0.0.1:8080/folding</pre>
+     * @param foldingUrl the root URL of the {@code /folding} endpoint, i.e: {@code http://127.0.0.1:8080/folding}
      * @return the created {@link LoginRequestSender}
      */
     public static LoginRequestSender createWithUrl(final String foldingUrl) {
@@ -73,7 +72,7 @@ public record LoginRequestSender(String loginUrl) {
         final LoginCredentials loginCredentials = LoginCredentials.createWithBasicAuthentication(encodedUserNameAndPassword);
 
         final HttpRequest request = HttpRequest.newBuilder()
-            .POST(HttpRequest.BodyPublishers.ofString(RestUtilConstants.GSON.toJson(loginCredentials)))
+            .POST(HttpRequest.BodyPublishers.ofString(RestUtilConstants.JSON_MAPPER.writeValueAsString(loginCredentials)))
             .uri(RestUri.create(loginUrl, "admin"))
             .header(RestHeader.CONTENT_TYPE.headerName(), ContentType.JSON.contentTypeValue())
             .build();

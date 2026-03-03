@@ -17,14 +17,15 @@
 
 package net.zodac.folding.client.java.response;
 
-import com.google.gson.reflect.TypeToken;
-import java.lang.reflect.Type;
 import java.net.http.HttpResponse;
 import java.util.Collection;
+import java.util.List;
 import net.zodac.folding.api.tc.User;
 import net.zodac.folding.client.java.request.UserRequestSender;
 import net.zodac.folding.rest.api.tc.request.UserRequest;
 import net.zodac.folding.rest.api.util.RestUtilConstants;
+import org.jspecify.annotations.Nullable;
+import tools.jackson.core.type.TypeReference;
 
 /**
  * Utility class used to parse a {@link HttpResponse} returned from {@link UserRequestSender}.
@@ -45,8 +46,11 @@ public final class UserResponseParser {
      * @return the retrieved {@link User}s
      */
     public static Collection<User> getAll(final HttpResponse<String> response) {
-        final Type collectionType = UserCollectionType.getInstance().getType();
-        return RestUtilConstants.GSON.fromJson(response.body(), collectionType);
+        final String body = response.body();
+        if (body == null || body.isBlank()) {
+            return List.of();
+        }
+        return RestUtilConstants.JSON_MAPPER.readValue(body, new UserCollectionType());
     }
 
     /**
@@ -54,10 +58,15 @@ public final class UserResponseParser {
      * {@link UserRequestSender#get(int, String)}.
      *
      * @param response the {@link HttpResponse} to parse
-     * @return the retrieved {@link User}
+     * @return the retrieved {@link User}, or {@code null} for a cached value (HTTP_304)
      */
-    public static User get(final HttpResponse<String> response) {
-        return RestUtilConstants.GSON.fromJson(response.body(), User.class);
+    public static @Nullable User get(final HttpResponse<String> response) {
+        final String body = response.body();
+        if (body == null || body.isBlank()) {
+            return null;
+        }
+
+        return RestUtilConstants.JSON_MAPPER.readValue(body, User.class);
     }
 
     /**
@@ -68,7 +77,7 @@ public final class UserResponseParser {
      * @return the created {@link User}
      */
     public static User create(final HttpResponse<String> response) {
-        return RestUtilConstants.GSON.fromJson(response.body(), User.class);
+        return RestUtilConstants.JSON_MAPPER.readValue(response.body(), User.class);
     }
 
     /**
@@ -79,23 +88,10 @@ public final class UserResponseParser {
      * @return the updated {@link User}
      */
     public static User update(final HttpResponse<String> response) {
-        return RestUtilConstants.GSON.fromJson(response.body(), User.class);
+        return RestUtilConstants.JSON_MAPPER.readValue(response.body(), User.class);
     }
 
-    /**
-     * Private class defining the {@link Collection} for {@link User}s.
-     */
-    private static final class UserCollectionType extends TypeToken<Collection<User>> {
+    private static final class UserCollectionType extends TypeReference<List<User>> {
 
-        private static final UserCollectionType INSTANCE = new UserCollectionType();
-
-        /**
-         * Retrieve a singleton instance of {@link UserCollectionType}.
-         *
-         * @return {@link UserCollectionType} instance.
-         */
-        static UserCollectionType getInstance() {
-            return INSTANCE;
-        }
     }
 }

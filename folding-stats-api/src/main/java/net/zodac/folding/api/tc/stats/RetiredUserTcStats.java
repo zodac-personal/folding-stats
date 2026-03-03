@@ -17,6 +17,7 @@
 
 package net.zodac.folding.api.tc.stats;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -33,6 +34,7 @@ import net.zodac.folding.api.util.StringUtils;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @ToString(doNotUseGetters = true, callSuper = true)
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class RetiredUserTcStats extends UserTcStats {
 
     /**

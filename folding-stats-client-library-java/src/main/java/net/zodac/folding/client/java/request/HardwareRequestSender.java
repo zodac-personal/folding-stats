@@ -41,7 +41,7 @@ public record HardwareRequestSender(String hardwareUrl) {
     /**
      * Create an instance of {@link HardwareRequestSender}.
      *
-     * @param foldingUrl the root URL of the {@code /folding} endpoint, i.e: <pre>http://127.0.0.1:8080/folding</pre>
+     * @param foldingUrl the root URL of the {@code /folding} endpoint, i.e: {@code http://127.0.0.1:8080}.
      * @return the created {@link HardwareRequestSender}
      */
     public static HardwareRequestSender createWithUrl(final String foldingUrl) {
@@ -200,7 +200,7 @@ public record HardwareRequestSender(String hardwareUrl) {
      */
     public HttpResponse<String> create(final HardwareRequest hardware, final String userName, final String password) throws FoldingRestException {
         final HttpRequest request = HttpRequest.newBuilder()
-            .POST(HttpRequest.BodyPublishers.ofString(RestUtilConstants.GSON.toJson(hardware)))
+            .POST(HttpRequest.BodyPublishers.ofString(RestUtilConstants.JSON_MAPPER.writeValueAsString(hardware)))
             .uri(RestUri.create(hardwareUrl))
             .header(RestHeader.CONTENT_TYPE.headerName(), ContentType.JSON.contentTypeValue())
             .header(RestHeader.AUTHORIZATION.headerName(), encodeBasicAuthentication(userName, password))
@@ -229,7 +229,7 @@ public record HardwareRequestSender(String hardwareUrl) {
     public HttpResponse<String> update(final int hardwareId, final HardwareRequest hardware, final String userName, final String password)
         throws FoldingRestException {
         final HttpRequest request = HttpRequest.newBuilder()
-            .PUT(HttpRequest.BodyPublishers.ofString(RestUtilConstants.GSON.toJson(hardware)))
+            .PUT(HttpRequest.BodyPublishers.ofString(RestUtilConstants.JSON_MAPPER.writeValueAsString(hardware)))
             .uri(RestUri.create(hardwareUrl, hardwareId))
             .header(RestHeader.CONTENT_TYPE.headerName(), ContentType.JSON.contentTypeValue())
             .header(RestHeader.AUTHORIZATION.headerName(), encodeBasicAuthentication(userName, password))

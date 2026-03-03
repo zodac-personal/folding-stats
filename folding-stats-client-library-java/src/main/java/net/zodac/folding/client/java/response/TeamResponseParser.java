@@ -17,14 +17,15 @@
 
 package net.zodac.folding.client.java.response;
 
-import com.google.gson.reflect.TypeToken;
-import java.lang.reflect.Type;
 import java.net.http.HttpResponse;
 import java.util.Collection;
+import java.util.List;
 import net.zodac.folding.api.tc.Team;
 import net.zodac.folding.client.java.request.TeamRequestSender;
 import net.zodac.folding.rest.api.tc.request.TeamRequest;
 import net.zodac.folding.rest.api.util.RestUtilConstants;
+import org.jspecify.annotations.Nullable;
+import tools.jackson.core.type.TypeReference;
 
 /**
  * Utility class used to parse a {@link HttpResponse} returned from {@link TeamRequestSender}.
@@ -42,8 +43,12 @@ public final class TeamResponseParser {
      * @return the retrieved {@link Team}s
      */
     public static Collection<Team> getAll(final HttpResponse<String> response) {
-        final Type collectionType = TeamCollectionType.getInstance().getType();
-        return RestUtilConstants.GSON.fromJson(response.body(), collectionType);
+        final String body = response.body();
+        if (body == null || body.isBlank()) {
+            return List.of();
+        }
+
+        return RestUtilConstants.JSON_MAPPER.readValue(body, new TeamCollectionType());
     }
 
     /**
@@ -51,10 +56,15 @@ public final class TeamResponseParser {
      * {@link TeamRequestSender#get(String)}.
      *
      * @param response the {@link HttpResponse} to parse
-     * @return the retrieved {@link Team}
+     * @return the retrieved {@link Team}, or {@code null} for a cached value (HTTP_304)
      */
-    public static Team get(final HttpResponse<String> response) {
-        return RestUtilConstants.GSON.fromJson(response.body(), Team.class);
+    public static @Nullable Team get(final HttpResponse<String> response) {
+        final String body = response.body();
+        if (body == null || body.isBlank()) {
+            return null;
+        }
+
+        return RestUtilConstants.JSON_MAPPER.readValue(body, Team.class);
     }
 
     /**
@@ -65,7 +75,7 @@ public final class TeamResponseParser {
      * @return the created {@link Team}
      */
     public static Team create(final HttpResponse<String> response) {
-        return RestUtilConstants.GSON.fromJson(response.body(), Team.class);
+        return RestUtilConstants.JSON_MAPPER.readValue(response.body(), Team.class);
     }
 
     /**
@@ -76,23 +86,10 @@ public final class TeamResponseParser {
      * @return the updated {@link Team}
      */
     public static Team update(final HttpResponse<String> response) {
-        return RestUtilConstants.GSON.fromJson(response.body(), Team.class);
+        return RestUtilConstants.JSON_MAPPER.readValue(response.body(), Team.class);
     }
 
-    /**
-     * Private class defining the {@link Collection} for {@link Team}s.
-     */
-    private static final class TeamCollectionType extends TypeToken<Collection<Team>> {
+    private static final class TeamCollectionType extends TypeReference<List<Team>> {
 
-        private static final TeamCollectionType INSTANCE = new TeamCollectionType();
-
-        /**
-         * Retrieve a singleton instance of {@link TeamCollectionType}.
-         *
-         * @return {@link TeamCollectionType} instance.
-         */
-        static TeamCollectionType getInstance() {
-            return INSTANCE;
-        }
     }
 }

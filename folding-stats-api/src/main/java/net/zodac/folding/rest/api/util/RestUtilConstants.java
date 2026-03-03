@@ -17,11 +17,13 @@
 
 package net.zodac.folding.rest.api.util;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import java.net.http.HttpClient;
 import java.time.Duration;
-import java.time.LocalDateTime;
+import tools.jackson.core.json.JsonWriteFeature;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Simple utility class holding some constants.
@@ -29,18 +31,19 @@ import java.time.LocalDateTime;
 public final class RestUtilConstants {
 
     /**
-     * Instance of {@link Gson} with:
+     * Instance of {@link ObjectMapper} with:
      * <ul>
      *     <li>Pretty-printing enabled</li>
      *     <li>HTML escaping disabled</li>
-     *     <li>Custom {@link LocalDateTimeGsonTypeAdapter} for {@link LocalDateTime}</li>
      * </ul>
      */
-    public static final Gson GSON = new GsonBuilder()
-        .registerTypeAdapter(LocalDateTime.class, LocalDateTimeGsonTypeAdapter.getInstance())
-        .setPrettyPrinting()
-        .disableHtmlEscaping()
-        .create();
+    public static final ObjectMapper JSON_MAPPER = JsonMapper.builder()
+        .enable(SerializationFeature.INDENT_OUTPUT) // Pretty print
+        .disable(JsonWriteFeature.ESCAPE_NON_ASCII) // Disable HTML escaping
+        .disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES) // Set null int values to 0
+        .disable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT)
+        .disable(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT)
+        .build();
 
     /**
      * Instance of {@link HttpClient} with:

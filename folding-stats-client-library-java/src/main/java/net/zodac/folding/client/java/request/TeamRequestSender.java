@@ -41,8 +41,7 @@ public record TeamRequestSender(String teamsUrl) {
     /**
      * Create an instance of {@link TeamRequestSender}.
      *
-     * @param foldingUrl the root URL of the {@code /folding} endpoint, i.e:
-     *                   <pre>http://127.0.0.1:8080/folding</pre>
+     * @param foldingUrl the root URL of the {@code /folding} endpoint, i.e: {@code http://127.0.0.1:8080/folding}
      * @return the created {@link TeamRequestSender}
      */
     public static TeamRequestSender createWithUrl(final String foldingUrl) {
@@ -200,7 +199,7 @@ public record TeamRequestSender(String teamsUrl) {
      */
     public HttpResponse<String> create(final TeamRequest team, final String userName, final String password) throws FoldingRestException {
         final HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
-            .POST(HttpRequest.BodyPublishers.ofString(RestUtilConstants.GSON.toJson(team)))
+            .POST(HttpRequest.BodyPublishers.ofString(RestUtilConstants.JSON_MAPPER.writeValueAsString(team)))
             .uri(RestUri.create(teamsUrl))
             .header(RestHeader.CONTENT_TYPE.headerName(), ContentType.JSON.contentTypeValue());
 
@@ -233,7 +232,7 @@ public record TeamRequestSender(String teamsUrl) {
     public HttpResponse<String> update(final int teamId, final TeamRequest team, final String userName, final String password)
         throws FoldingRestException {
         final HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
-            .PUT(HttpRequest.BodyPublishers.ofString(RestUtilConstants.GSON.toJson(team)))
+            .PUT(HttpRequest.BodyPublishers.ofString(RestUtilConstants.JSON_MAPPER.writeValueAsString(team)))
             .uri(RestUri.create(teamsUrl, teamId))
             .header(RestHeader.CONTENT_TYPE.headerName(), ContentType.JSON.contentTypeValue());
 

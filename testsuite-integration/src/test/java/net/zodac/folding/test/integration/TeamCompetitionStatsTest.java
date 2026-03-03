@@ -986,7 +986,7 @@ class TeamCompetitionStatsTest {
 
         final OffsetTcStats offsetTcStats = OffsetTcStats.create(100L, Math.round(100L * hardware.multiplier()), 10);
         final HttpRequest request = HttpRequest.newBuilder()
-            .method("PATCH", HttpRequest.BodyPublishers.ofString(RestUtilConstants.GSON.toJson(offsetTcStats)))
+            .method("PATCH", HttpRequest.BodyPublishers.ofString(RestUtilConstants.JSON_MAPPER.writeValueAsString(offsetTcStats)))
             .uri(URI.create(FOLDING_URL + "/stats/users/" + userId))
             .header(RestHeader.CONTENT_TYPE.headerName(), ContentType.JSON.contentTypeValue())
             .build();

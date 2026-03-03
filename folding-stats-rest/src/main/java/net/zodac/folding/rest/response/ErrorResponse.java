@@ -22,7 +22,7 @@ package net.zodac.folding.rest.response;
  * body simply being a {@link String}.
  *
  * <p>
- * When using {@link com.google.gson.Gson}, the response will be in the form:
+ * When using JSON, the response will be in the form:
  * <pre>
  *     {
  *         "error": "My error message here"

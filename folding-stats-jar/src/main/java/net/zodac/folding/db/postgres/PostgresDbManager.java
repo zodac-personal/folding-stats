@@ -18,7 +18,6 @@
 package net.zodac.folding.db.postgres;
 
 import static net.zodac.folding.api.util.DateTimeConverterUtils.formatMonth;
-import static net.zodac.folding.db.postgres.RecordConverter.GSON;
 import static net.zodac.folding.db.postgres.gen.Routines.crypt;
 import static net.zodac.folding.db.postgres.gen.tables.Hardware.HARDWARE;
 import static net.zodac.folding.db.postgres.gen.tables.MonthlyResults.MONTHLY_RESULTS;
@@ -69,6 +68,7 @@ import net.zodac.folding.api.util.DateTimeUtils;
 import net.zodac.folding.api.util.DecodedLoginCredentials;
 import net.zodac.folding.api.util.LoggerName;
 import net.zodac.folding.rest.api.tc.historic.HistoricStats;
+import net.zodac.folding.rest.api.util.RestUtilConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jooq.DSLContext;
@@ -418,8 +418,8 @@ public record PostgresDbManager(DataSource dataSource) implements DbManager {
                     userChange.createdUtcTimestamp(),
                     userChange.updatedUtcTimestamp(),
                     userChange.previousUser().id(),
-                    GSON.toJson(userChange.previousUser()),
-                    GSON.toJson(userChange.newUser()),
+                    RestUtilConstants.JSON_MAPPER.writeValueAsString(userChange.previousUser()),
+                    RestUtilConstants.JSON_MAPPER.writeValueAsString(userChange.newUser()),
                     userChange.state().toString()
                 )
                 .returning(USER_CHANGES.USER_CHANGE_ID);
@@ -505,8 +505,8 @@ public record PostgresDbManager(DataSource dataSource) implements DbManager {
                 .update(USER_CHANGES)
                 .set(USER_CHANGES.CREATED_UTC_TIMESTAMP, userChangeToUpdate.createdUtcTimestamp())
                 .set(USER_CHANGES.UPDATED_UTC_TIMESTAMP, userChangeToUpdate.updatedUtcTimestamp())
-                .set(USER_CHANGES.PREVIOUS_USER, GSON.toJson(userChangeToUpdate.previousUser()))
-                .set(USER_CHANGES.NEW_USER, GSON.toJson(userChangeToUpdate.newUser()))
+                .set(USER_CHANGES.PREVIOUS_USER, RestUtilConstants.JSON_MAPPER.writeValueAsString(userChangeToUpdate.previousUser()))
+                .set(USER_CHANGES.NEW_USER, RestUtilConstants.JSON_MAPPER.writeValueAsString(userChangeToUpdate.newUser()))
                 .set(USER_CHANGES.STATE, userChangeToUpdate.state().toString())
                 .where(USER_CHANGES.USER_CHANGE_ID.equal(userChangeToUpdate.id()));
             SQL_LOGGER.debug("Executing SQL: '{}'", query);
@@ -764,6 +764,7 @@ public record PostgresDbManager(DataSource dataSource) implements DbManager {
     public Collection<HistoricStats> getHistoricStatsDaily(final int userId, final Year year, final Month month) {
         SQL_LOGGER.info("Getting historic daily user TC stats for {}/{} for user {}", () -> formatMonth(month), () -> year, () -> userId);
 
+        // TODO: Convert to jOOQ
         final String selectSqlStatement = """
             SELECT utc_timestamp::DATE AS daily_timestamp,
                 COALESCE(MAX(tc_points) - LAG(MAX(tc_points)) OVER (ORDER BY MIN(utc_timestamp)), 0) AS diff_points,
@@ -1146,7 +1147,7 @@ public record PostgresDbManager(DataSource dataSource) implements DbManager {
             final var query = queryContext
                 .insertInto(MONTHLY_RESULTS)
                 .columns(MONTHLY_RESULTS.UTC_TIMESTAMP, MONTHLY_RESULTS.JSON_RESULT)
-                .values(monthlyResult.utcTimestamp(), GSON.toJson(monthlyResult));
+                .values(monthlyResult.utcTimestamp(), RestUtilConstants.JSON_MAPPER.writeValueAsString(monthlyResult));
 
             SQL_LOGGER.debug("Executing SQL: '{}'", query);
 

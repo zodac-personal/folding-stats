@@ -42,8 +42,7 @@ public record HistoricStatsRequestSender(String historicStatsUrl) {
     /**
      * Create an instance of {@link HistoricStatsRequestSender}.
      *
-     * @param foldingUrl the root URL of the {@code /folding} endpoint, i.e:
-     *                   <pre>http://127.0.0.1:8080/folding</pre>
+     * @param foldingUrl the root URL of the {@code /folding} endpoint, i.e: {@code http://127.0.0.1:8080/folding}
      * @return the created {@link HistoricStatsRequestSender}
      */
     public static HistoricStatsRequestSender createWithUrl(final String foldingUrl) {

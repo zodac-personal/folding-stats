@@ -29,6 +29,7 @@ import net.zodac.folding.client.java.response.TeamResponseParser;
 import net.zodac.folding.rest.api.exception.FoldingRestException;
 import net.zodac.folding.rest.api.tc.request.TeamRequest;
 import net.zodac.folding.test.integration.util.TestConstants;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Utility class for {@link Team}-based tests.
@@ -94,7 +95,12 @@ public final class TeamUtils {
     public static Team get(final int teamId) throws FoldingRestException {
         final HttpResponse<String> response = TEAM_REQUEST_SENDER.get(teamId);
         if (response.statusCode() == HttpURLConnection.HTTP_OK) {
-            return TeamResponseParser.get(response);
+            final @Nullable Team team = TeamResponseParser.get(response);
+            if (team == null) {
+                throw new FoldingRestException(
+                    String.format("Invalid response (%s) when getting team with ID %s: %s", response.statusCode(), teamId, response.body()));
+            }
+            return team;
         }
 
         throw new FoldingRestException(

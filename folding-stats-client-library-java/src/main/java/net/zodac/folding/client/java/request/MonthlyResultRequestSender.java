@@ -45,8 +45,7 @@ public record MonthlyResultRequestSender(String monthlyResultUrl) {
     /**
      * Create an instance of {@link MonthlyResultRequestSender}.
      *
-     * @param foldingUrl the root URL of the {@code /folding} endpoint, i.e:
-     *                   <pre>http://127.0.0.1:8080/folding</pre>
+     * @param foldingUrl the root URL of the {@code /folding} endpoint, i.e: {@code http://127.0.0.1:8080/folding}
      * @return the created {@link MonthlyResultRequestSender}
      */
     public static MonthlyResultRequestSender createWithUrl(final String foldingUrl) {
