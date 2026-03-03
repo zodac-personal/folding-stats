@@ -10,10 +10,6 @@ services:
       context: .
       dockerfile: docker/frontend/Dockerfile
       args:
-        # Docker image versions
-        HTTPD_VERSION: "2.4.66"     # https://hub.docker.com/_/httpd/tags
-        MINIFY_VERSION: "v2.24.10"  # https://hub.docker.com/r/tdewolff/minify/tags
-        NODE_VERSION: "25.7.0"      # https://hub.docker.com/_/node/tags
         # Build arguments
         ADMIN_EMAIL_ADDRESS: "email@test.com"
         FORUM_LINK: "https://extremehw.net/forum/125-extreme-team-folding"
@@ -38,10 +34,6 @@ services:
       context: .
       dockerfile: docker/backend/Dockerfile
       args:
-        # Docker image versions
-        DEBIAN_VERSION: "13"      # https://console.cloud.google.com/artifacts/docker/distroless/us/gcr.io
-        JAVA_VERSION: "25.0.2_10" # https://hub.docker.com/_/eclipse-temurin/tags
-        MAVEN_VERSION: "3.9.12"   # https://hub.docker.com/_/maven/tags
         # Build arguments
         KEYSTORE_PASSWORD: "shroot"
     container_name: backend_dev
@@ -92,8 +84,6 @@ services:
       context: .
       dockerfile: docker/database/Dockerfile
       args:
-        # Docker image versions
-        POSTGRES_VERSION: "18.3"  # https://hub.docker.com/_/postgres/
         # Build arguments
         ADMIN_USERNAME: "root"
         ADMIN_PASSWORD: "shroot"

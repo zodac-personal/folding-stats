@@ -1,12 +1,8 @@
 # syntax = docker/dockerfile:1.2
-ARG JAVA_VERSION
-ARG MAVEN_VERSION
-ARG DEBIAN_VERSION
-
 ############################
 # Stage 1: Generate certs
 ############################
-FROM eclipse-temurin:${JAVA_VERSION}-jdk AS cert_builder
+FROM eclipse-temurin:25.0.2_10-jdk AS cert_builder
 
 RUN mkdir --parents /usr/local/certs/stats/
 WORKDIR /usr/local/certs/stats/
@@ -32,12 +28,12 @@ RUN apt-get update && apt-get install -yqq --no-install-recommends openssl && \
 ############################
 # Stage 2: Maven binary
 ############################
-FROM maven:${MAVEN_VERSION}-eclipse-temurin-21 AS maven_builder
+FROM maven:3.9.12-eclipse-temurin-21 AS maven_builder
 
 ############################
 # Stage 3: Build application
 ############################
-FROM eclipse-temurin:${JAVA_VERSION}-jdk AS application_builder
+FROM eclipse-temurin:25.0.2_10-jdk AS application_builder
 
 COPY --from=maven_builder /usr/share/maven/ /usr/share/maven/
 ENV MAVEN_HOME="/usr/share/maven/"
@@ -74,21 +70,21 @@ RUN --mount=type=cache,target=/root/.m2 mvn verify -P docker -Dlogging-config-lo
 ############################
 # Stage 4: Custom JDK via jlink
 ############################
-FROM eclipse-temurin:${JAVA_VERSION}-jdk AS jdk_builder
+FROM eclipse-temurin:25.0.2_10-jdk AS jdk_builder
 
 RUN apt-get update && apt-get install -yqq --no-install-recommends binutils && \
         jlink --compress=zip-9 \
         --no-header-files \
         --no-man-pages \
         --strip-debug \
-        --add-modules java.se,jdk.crypto.cryptoki,jdk.management,jdk.unsupported \
+        --add-modules java.base,java.sql,java.desktop,java.instrument,java.management,java.naming,java.net.http,java.security.jgss,java.security.sasl,jdk.crypto.cryptoki,jdk.management,jdk.unsupported \
         --output "/opt/jdk" && \
     strip -p --strip-unneeded "/opt/jdk/lib/server/libjvm.so"
 
 ############################
 # Stage 5: Prep scripts
 #############################
-FROM debian:trixie-slim AS prep_scripts
+FROM debian:13.3-slim AS prep_scripts
 COPY ./docker/backend/scripts/startup.sh /startup.sh
 COPY ./docker/backend/scripts/healthcheck.sh /healthcheck.sh
 RUN chmod +x /startup.sh /healthcheck.sh
@@ -96,13 +92,12 @@ RUN chmod +x /startup.sh /healthcheck.sh
 ############################
 # Stage 6: Install busybox
 #############################
-FROM debian:trixie-slim AS shell_builder
-RUN apt-get update && apt-get install -y busybox-static
+FROM busybox:1.37.0-musl AS shell_builder
 
 ############################
 # Stage 7: Distroless runtime
 ############################
-FROM gcr.io/distroless/base-debian${DEBIAN_VERSION}:nonroot AS runtime
+FROM gcr.io/distroless/base-debian13:nonroot AS runtime
 
 # Copy custom JDK and app
 COPY --from=jdk_builder /opt/jdk /opt/jdk
@@ -113,7 +108,8 @@ COPY --from=cert_builder /usr/local/certs/stats/ /usr/local/certs/stats/
 COPY ./docker/backend/config/log4j2.xml /var/backend/log4j2.xml
 COPY --from=prep_scripts /startup.sh /startup.sh
 COPY --from=prep_scripts /healthcheck.sh /healthcheck.sh
-COPY --from=shell_builder /bin/busybox /busybox
+COPY --from=shell_builder /bin/busybox /bin/wget
+COPY --from=shell_builder /bin/busybox /bin/sh
 
 # Env
 ENV JAVA_HOME="/opt/jdk"

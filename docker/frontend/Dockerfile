@@ -1,7 +1,4 @@
-ARG HTTPD_VERSION
-ARG MINIFY_VERSION
-ARG NODE_VERSION
-FROM node:${NODE_VERSION}-alpine AS raml
+FROM node:25.7.0-alpine AS raml
 # Install raml2html
 RUN npm install --ignore-scripts -g raml2html@7.8.0
 
@@ -19,7 +16,7 @@ RUN grep -rl '%REST_ENDPOINT_URL%' . | xargs sed -i "s|%REST_ENDPOINT_URL%|${RES
     grep -rl '%TITLE%' . | xargs sed -i "s|%TITLE%|${TITLE}|g" && \
     raml2html --input /docker/apache/raml/api.raml --output /docker/apache/api.html
 
-FROM tdewolff/minify:${MINIFY_VERSION} AS minifier
+FROM tdewolff/minify:v2.24.10 AS minifier
 
 ARG REST_ENDPOINT_URL
 ARG UPDATE_ENABLED
@@ -45,7 +42,7 @@ RUN minify --recursive --verbose --type=css --output /docker/apache/site/res/css
     find /docker/apache/site/res/ -iname "*.css" | sed 's|....$||' | xargs -I {} mv {}.css {}.min.css && \
     find /docker/apache/site/res/ -iname "*.js" | sed 's|...$||' | xargs -I {} mv {}.js {}.min.js
 
-FROM httpd:${HTTPD_VERSION}-alpine
+FROM httpd:2.4.66-alpine
 
 # Installing any required packages
 RUN apk --no-cache add \

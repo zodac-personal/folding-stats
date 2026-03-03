@@ -15,18 +15,16 @@ function main() {
   cd "${directory}" || exit 1
   echo "Looking for ${file_extension} files in ${directory}"
 
-  for file_name in *."${file_extension}"
-  do
-    base=$(basename "${file_name}")
-    name_without_extension="${base%%.*}"
-    hash=$(md5sum "${file_name}" | tr -s ' ' | cut -d ' ' -f1)
+  for file_name in *."${file_extension}"; do
+    [[ "${file_name}" == *-*.min.${file_extension} ]] && continue
+
+    name_without_extension="${file_name%%.*}"
+    hash=$(sha256sum "${file_name}" | tr -s ' ' | cut -d ' ' -f1)
     new_file_name="${name_without_extension}-${hash}.min.${file_extension}"
     mv "${file_name}" "${new_file_name}"
     echo "'${file_name}'"
     grep -rl "${file_name}" "${END_DIRECTORY}" | xargs sed -i "s|${file_name}|${new_file_name}|g"
   done
-
-  cd "${END_DIRECTORY}" || exit 1
 }
 
 # Start script execution

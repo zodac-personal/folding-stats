@@ -1,5 +1,4 @@
-ARG POSTGRES_VERSION
-FROM postgres:${POSTGRES_VERSION}-alpine
+FROM postgres:18.3-alpine
 
 # Updating system packages
 RUN apk --no-cache update && apk --no-cache upgrade

@@ -1,4 +1,4 @@
-#!/busybox sh
+#!/bin/sh
 
 instance_type="test"
 if [ "${DEPLOYMENT_TYPE}" = "production" ]; then
