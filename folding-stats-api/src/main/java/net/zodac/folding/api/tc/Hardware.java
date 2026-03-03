@@ -87,15 +87,15 @@ public final class Hardware implements Comparable<Hardware>, ResponsePojo {
         description = "The user-friendly display name of the hardware",
         example = "GeForce RTX 3060",
         requiredMode = Schema.RequiredMode.REQUIRED,
-        accessMode = Schema.AccessMode.READ_WRITE
+        accessMode = Schema.AccessMode.READ_ONLY
     )
     private final String displayName;
     @Schema(
         description = "The manufacturer of the hardware (case-sensitive)",
         example = "NVIDIA",
-        oneOf = HardwareMake.class,
         requiredMode = Schema.RequiredMode.REQUIRED,
-        accessMode = Schema.AccessMode.READ_WRITE
+        accessMode = Schema.AccessMode.READ_ONLY,
+        enumAsRef = true
     )
     private final HardwareMake hardwareMake;
     @Schema(
@@ -103,7 +103,8 @@ public final class Hardware implements Comparable<Hardware>, ResponsePojo {
         example = "GPU",
         oneOf = HardwareType.class,
         requiredMode = Schema.RequiredMode.REQUIRED,
-        accessMode = Schema.AccessMode.READ_WRITE
+        accessMode = Schema.AccessMode.READ_ONLY,
+        enumAsRef = true
     )
     private final HardwareType hardwareType;
     @Schema(
@@ -111,7 +112,7 @@ public final class Hardware implements Comparable<Hardware>, ResponsePojo {
         example = "10.50",
         minimum = "1.00",
         requiredMode = Schema.RequiredMode.REQUIRED,
-        accessMode = Schema.AccessMode.READ_WRITE
+        accessMode = Schema.AccessMode.READ_ONLY
     )
     private final double multiplier;
     @Schema(
@@ -119,7 +120,7 @@ public final class Hardware implements Comparable<Hardware>, ResponsePojo {
         example = "555",
         minimum = "1",
         requiredMode = Schema.RequiredMode.REQUIRED,
-        accessMode = Schema.AccessMode.READ_WRITE
+        accessMode = Schema.AccessMode.READ_ONLY
     )
     private final long averagePpd;
 

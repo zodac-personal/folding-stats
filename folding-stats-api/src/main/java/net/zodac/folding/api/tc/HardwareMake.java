@@ -17,32 +17,41 @@
 
 package net.zodac.folding.api.tc;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Collection;
 import java.util.List;
 
 /**
  * Specifies the make/brand of {@link Hardware}.
  */
+@Schema(name = "HardwareMake",
+    description = "Enum specifying the available make/brands for a piece of Hardware",
+    example = "NVIDIA"
+)
 public enum HardwareMake {
 
     /**
      * The {@link Hardware} is by <b>AMD</b>.
      */
+    @Schema(description = "The hardware is manufactured by AMD")
     AMD,
 
     /**
      * The {@link Hardware} is by <b>Intel</b>.
      */
+    @Schema(description = "The hardware is manufactured by Intel")
     INTEL,
 
     /**
      * The {@link Hardware} is by <b>nVidia</b>.
      */
+    @Schema(description = "The hardware is manufactured by NVIDIA")
     NVIDIA,
 
     /**
      * Not a valid {@link HardwareMake}.
      */
+    @Schema(description = "Placeholder for an invalid hardware make")
     INVALID;
 
     private static final Collection<HardwareMake> ALL_VALUES = List.of(values());

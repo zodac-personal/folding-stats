@@ -17,6 +17,7 @@
 
 package net.zodac.folding.rest.api;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import net.zodac.folding.api.util.EncodingUtils;
 
 /**
@@ -26,8 +27,25 @@ import net.zodac.folding.api.util.EncodingUtils;
  *     <li>Encode the result with {@link java.util.Base64}</li>
  *     <li>Prefix the encoded result with "Basic " (note the space)</li>
  * </ol>
+ *
+ * @param encodedUserNameAndPassword the {@link java.util.Base64}-encoded username/password
  */
-public record LoginCredentials(String encodedUserNameAndPassword) {
+@Schema(name = "LoginCredentials",
+    description = "The JSON representation of the login credentials for the /admin endpoint",
+    example = """
+        {
+            "encodedUserNameAndPassword": "Basic dXNlcm5hbWU6cGFzc3dvcmQ="
+        }"""
+)
+public record LoginCredentials(
+    @Schema(
+        description = "The Base64-encoded username/password",
+        example = "Basic dXNlcm5hbWU6cGFzc3dvcmQ=",
+        requiredMode = Schema.RequiredMode.REQUIRED,
+        accessMode = Schema.AccessMode.READ_ONLY
+    )
+    String encodedUserNameAndPassword
+) {
 
     /**
      * Creates an instance of {@link LoginCredentials} given a {@link java.util.Base64}-encoded username/password credentials.

@@ -68,17 +68,17 @@ public record HardwareRequest(
     @Schema(
         description = "The manufacturer of the hardware (case-sensitive)",
         example = "NVIDIA",
-        oneOf = HardwareMake.class,
         requiredMode = Schema.RequiredMode.REQUIRED,
-        accessMode = Schema.AccessMode.READ_WRITE
+        accessMode = Schema.AccessMode.READ_WRITE,
+        enumAsRef = true
     )
     String hardwareMake,
     @Schema(
         description = "The type of the hardware (case-sensitive)",
         example = "GPU",
-        oneOf = HardwareType.class,
         requiredMode = Schema.RequiredMode.REQUIRED,
-        accessMode = Schema.AccessMode.READ_WRITE
+        accessMode = Schema.AccessMode.READ_WRITE,
+        enumAsRef = true
     )
     String hardwareType,
     @Schema(

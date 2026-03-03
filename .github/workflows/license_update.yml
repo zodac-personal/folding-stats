@@ -19,11 +19,6 @@ jobs:
       security-events: write
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6.0.2
-        with:
-          fetch-depth: 0
-
       - name: Cache local .m2
         uses: actions/cache@v5.0.3
         with:
@@ -41,7 +36,7 @@ jobs:
             ${{ runner.os }}-dependency-check-
 
       - name: Set up maven
-        uses: s4u/setup-maven-action@v1.18.0
+        uses: s4u/setup-maven-action@v1.19.0
         with:
           checkout-fetch-depth: 0
           java-distribution: 'temurin'
