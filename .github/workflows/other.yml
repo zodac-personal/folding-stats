@@ -26,13 +26,13 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
 
       # Additional CSS Analysis
       - name: Set up Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v6.2.0
         with:
           node-version: '25.7.0'
 
@@ -47,7 +47,7 @@ jobs:
 
       # Additional Docker Analysis
       - name: Run Hadolint and generate report
-        uses: hadolint/hadolint-action@v3
+        uses: hadolint/hadolint-action@v3.3.0
         with:
           config: ./ci/other/.hadolint.yaml
           dockerfile: Dockerfile
@@ -56,12 +56,12 @@ jobs:
 
       # Additional JavaScript Analysis
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v4
+        uses: github/codeql-action/init@v4.31.10
         with:
           languages: 'javascript'
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v4
+        uses: github/codeql-action/analyze@v4.31.10
 
         # SonarQube Analysis (CSS, Docker, HTML, JavaScript)
       - name: Execute SonarQube Scan

@@ -20,12 +20,12 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
 
       - name: Cache local .m2
-        uses: actions/cache@v5
+        uses: actions/cache@v5.0.3
         with:
           path: ~/.m2
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -33,7 +33,7 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Cache dependency-check data
-        uses: actions/cache@v5
+        uses: actions/cache@v5.0.3
         with:
           path: ~/.m2/repository/org/owasp/dependency-check/
           key: ${{ runner.os }}-dependency-check-${{ hashFiles('**/pom.xml') }}
@@ -41,7 +41,7 @@ jobs:
             ${{ runner.os }}-dependency-check-
 
       - name: Set up maven
-        uses: s4u/setup-maven-action@v1
+        uses: s4u/setup-maven-action@v1.19.0
         with:
           checkout-fetch-depth: 0
           java-distribution: 'temurin'
@@ -66,7 +66,7 @@ jobs:
 
       - name: Deploy docker containers
         if: env.has_changes == 'true'
-        uses: hoverkraft-tech/compose-action@v2
+        uses: hoverkraft-tech/compose-action@v2.5.0
         with:
           compose-file: docker-compose-dev.yml
 
@@ -89,7 +89,7 @@ jobs:
 
       - name: Push changes
         if: env.has_changes == 'true'
-        uses: ad-m/github-push-action@v1
+        uses: ad-m/github-push-action@v1.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: master
