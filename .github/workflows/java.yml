@@ -28,12 +28,12 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v9
         with:
           fetch-depth: 0
 
       - name: Cache local .m2
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.m2
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -41,7 +41,7 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Cache dependency-check data
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.m2/repository/org/owasp/dependency-check/
           key: ${{ runner.os }}-dependency-check-${{ hashFiles('**/pom.xml') }}
@@ -49,7 +49,7 @@ jobs:
             ${{ runner.os }}-dependency-check-
 
       - name: Set up maven
-        uses: s4u/setup-maven-action@v1.18.0
+        uses: s4u/setup-maven-action@v1
         with:
           checkout-fetch-depth: 0
           java-distribution: 'temurin'
@@ -57,12 +57,14 @@ jobs:
           maven-version: '3.9.11'
 
       - name: Deploy docker containers
-        uses: hoverkraft-tech/compose-action@v2.2.0
+        uses: hoverkraft-tech/compose-action@v2
         with:
           compose-file: docker-compose-dev.yml
 
       - name: Run linters and unit/integration tests, then publish results to SonarQube
         env:
+          DEPENDENCY_CHECK_OSS_USERNAME: ${{ secrets.DEPENDENCY_CHECK_OSS_USERNAME }}
+          DEPENDENCY_CHECK_OSS_PASSWORD: ${{ secrets.DEPENDENCY_CHECK_OSS_PASSWORD }}
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
           SONARQUBE_PAT: ${{ secrets.SONARQUBE_PAT }}

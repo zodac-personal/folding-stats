@@ -26,18 +26,18 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       # Additional CSS Analysis
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '24.8.0'
+          node-version: '25.7.0'
 
       - name: Install StyleLint
-        run: npm install -g stylelint@16.14.1 stylelint-config-standard@37.0.0
+        run: npm install -g stylelint@17.4.0 stylelint-config-standard@40.0.0
 
       - name: Run StyleLint
         run: stylelint --config ./ci/other/.stylelintrc.json --formatter json --max-warnings 0 --output-file stylelint-report.json "docker/frontend/css/*.css" || true
@@ -47,7 +47,7 @@ jobs:
 
       # Additional Docker Analysis
       - name: Run Hadolint and generate report
-        uses: hadolint/hadolint-action@v3.1.0
+        uses: hadolint/hadolint-action@v3
         with:
           config: ./ci/other/.hadolint.yaml
           dockerfile: Dockerfile
@@ -56,12 +56,12 @@ jobs:
 
       # Additional JavaScript Analysis
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3.26.6
+        uses: github/codeql-action/init@v4
         with:
           languages: 'javascript'
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3.26.6
+        uses: github/codeql-action/analyze@v4
 
         # SonarQube Analysis (CSS, Docker, HTML, JavaScript)
       - name: Execute SonarQube Scan
@@ -73,7 +73,7 @@ jobs:
           --rm \
           -e SONAR_HOST_URL=${{ secrets.SONAR_HOST_URL }} \
           -v "$(pwd):/usr/src/" \
-          sonarsource/sonar-scanner-cli:11.2 \
+          sonarsource/sonar-scanner-cli:12.0 \
             -Dsonar.projectKey=folding-stats-other  \
             -Dsonar.projectName=folding-stats-other  \
             -Dsonar.sources=/usr/src/docker/frontend/css/,/usr/src/docker/frontend/pages/,/usr/src/docker/frontend/js,/usr/src/docker/backend/Dockerfile,/usr/src/docker/database/Dockerfile,/usr/src/docker/frontend/Dockerfile,/usr/src/docker/frontend/scripts/,/usr/src/docker/backend/scripts/ \
