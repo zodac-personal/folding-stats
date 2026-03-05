@@ -19,6 +19,7 @@ package net.zodac.folding.db.postgres;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import java.time.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -51,11 +52,17 @@ public final class PostgresDataSource extends HikariDataSource {
         hikariConfig.setDriverClassName(dataSourceDriver);
         hikariConfig.setUsername(dataSourceUsername);
         hikariConfig.setPassword(dataSourcePassword);
+        hikariConfig.setConnectionTimeout(Duration.ofMinutes(2L).toMillis());
+        hikariConfig.setInitializationFailTimeout(Duration.ofMinutes(2L).toMillis());
         hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
         hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
         hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 
-        LOGGER.debug("Connecting to DB...");
+        LOGGER.info("Connecting to DB");
+        LOGGER.debug("dataSourceUrl: {}", dataSourceUrl);
+        LOGGER.debug("dataSourceDriver: {}", dataSourceDriver);
+        LOGGER.debug("dataSourceUsername: {}", dataSourceUsername);
+        LOGGER.debug("dataSourcePassword: {}", dataSourcePassword);
         return new PostgresDataSource(hikariConfig);
     }
 }

@@ -40,6 +40,7 @@ import org.springframework.context.annotation.Configuration;
 public class DbManagerConfiguration {
 
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final int MAXIMUM_NUMBER_OF_RETRIES = 3;
     private static final String DATABASE_VARIABLE_NAME = "DEPLOYED_DATABASE";
 
     /**
@@ -78,9 +79,14 @@ public class DbManagerConfiguration {
 
     private static Retry retry() {
         final RetryConfig retryConfig = RetryConfig.custom()
-            .maxAttempts(10)
+            .maxAttempts(MAXIMUM_NUMBER_OF_RETRIES)
             .intervalFunction(IntervalFunction.ofExponentialBackoff(Duration.ofSeconds(10L)))
             .build();
-        return Retry.of("DatabaseConnection", retryConfig);
+        final Retry retry = Retry.of("DatabaseConnection", retryConfig);
+        retry.getEventPublisher()
+            .onRetry(event -> LOGGER.warn("Failed to connect to DB (attempt #{}/{}), retrying...", event.getNumberOfRetryAttempts(),
+                MAXIMUM_NUMBER_OF_RETRIES))
+            .onError(event -> LOGGER.error("Failed to connect to DB after {} attempts", event.getNumberOfRetryAttempts(), event.getLastThrowable()));
+        return retry;
     }
 }
