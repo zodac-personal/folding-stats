@@ -51,6 +51,12 @@ jobs:
           java-version: '25'
           maven-version: '3.9.12'
 
+      - name: Write SSL certificates
+        run: |
+          mkdir -p docker/frontend/certs
+          echo "${{ secrets.FOLDING_STATS_SSL_CERT }}" > docker/frontend/certs/folding-stats.crt
+          echo "${{ secrets.FOLDING_STATS_SSL_CERT_KEY }}" > docker/frontend/certs/folding-stats.key
+
       - name: Deploy docker containers
         uses: hoverkraft-tech/compose-action@v2.5.0
         with:
