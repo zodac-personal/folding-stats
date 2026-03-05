@@ -70,8 +70,8 @@ services:
       SECONDS_BETWEEN_HTTP_REQUEST_ATTEMPTS: "0"
       STATS_SCHEDULED_PARSING_ENABLED: "false"
       # Security configuration, default user
-      SPRING_SECURITY_USER_NAME: "${ADMIN_USER}"
-      SPRING_SECURITY_USER_PASSWORD: "${ADMIN_PASSWORD}"
+      SPRING_SECURITY_USER_NAME: "root"
+      SPRING_SECURITY_USER_PASSWORD: "shroot"
       SPRING_SECURITY_USER_ROLES: "ADMIN"
       # Category configuration
       USERS_IN_AMD_GPU: "1"
