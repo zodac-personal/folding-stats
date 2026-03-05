@@ -8,13 +8,13 @@ ARG TITLE
 RUN mkdir /docker/
 WORKDIR /docker/
 
-COPY ./docker/frontend/raml/ /docker/apache/raml/
+COPY ./docker/frontend/raml/ /docker/nginx/raml/
 
 # Replace environment arguments in RAML files, then build RAML output HTML
 SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 RUN grep -rl '%REST_ENDPOINT_URL%' . | xargs sed -i "s|%REST_ENDPOINT_URL%|${REST_ENDPOINT_URL}|g" && \
     grep -rl '%TITLE%' . | xargs sed -i "s|%TITLE%|${TITLE}|g" && \
-    raml2html --input /docker/apache/raml/api.raml --output /docker/apache/api.html
+    raml2html --input /docker/nginx/raml/api.raml --output /docker/nginx/api.html
 
 FROM tdewolff/minify:v2.24.10 AS minifier
 
@@ -25,8 +25,8 @@ RUN mkdir /docker/
 WORKDIR /docker/
 
 # Copy the JS and CSS files to run the minification
-COPY ./docker/frontend/css /docker/apache/css
-COPY ./docker/frontend/js /docker/apache/js
+COPY ./docker/frontend/css /docker/nginx/css
+COPY ./docker/frontend/js /docker/nginx/js
 
 # Replace environment arguments in JS files
 SHELL ["/bin/ash", "-o", "pipefail", "-c"]
@@ -34,32 +34,26 @@ RUN grep -rl '%REST_ENDPOINT_URL%' . | xargs sed -i "s|%REST_ENDPOINT_URL%|${RES
     grep -rl '%UPDATE_ENABLED%' . | xargs sed -i "s|%UPDATE_ENABLED%|${UPDATE_ENABLED}|g"
 
 # Minify JS and CSS files, then rename to end with *.min.*
-WORKDIR /docker/apache/
-RUN minify --recursive --verbose --type=css --output /docker/apache/site/res/css/ css/ && \
-    minify --recursive --verbose --type=js --output /docker/apache/site/res/js/ js/ && \
-    mv /docker/apache/site/res/js/util/*.js /docker/apache/site/res/js/ && \
-    rm -rf /docker/apache/site/res/js/util/ && \
-    find /docker/apache/site/res/ -iname "*.css" | sed 's|....$||' | xargs -I {} mv {}.css {}.min.css && \
-    find /docker/apache/site/res/ -iname "*.js" | sed 's|...$||' | xargs -I {} mv {}.js {}.min.js
+WORKDIR /docker/nginx/
+RUN minify --recursive --verbose --type=css --output /docker/nginx/site/res/css/ css/ && \
+    minify --recursive --verbose --type=js --output /docker/nginx/site/res/js/ js/ && \
+    mv /docker/nginx/site/res/js/util/*.js /docker/nginx/site/res/js/ && \
+    rm -rf /docker/nginx/site/res/js/util/ && \
+    find /docker/nginx/site/res/ -iname "*.css" | sed 's|....$||' | xargs -I {} mv {}.css {}.min.css && \
+    find /docker/nginx/site/res/ -iname "*.js" | sed 's|...$||' | xargs -I {} mv {}.js {}.min.js
 
-FROM httpd:2.4.66-alpine
+FROM nginx:1.29.5-alpine
 
-# Installing any required packages
-RUN apk --no-cache add \
-      brotli
+# Copy nginx config
+COPY ./docker/frontend/conf/nginx.conf /etc/nginx/nginx.conf
+COPY ./docker/frontend/conf/*.template /etc/nginx/templates/
+RUN mv /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh.disabled
 
-# Apache configuration (SSL certs are provided through a volume mount)
-COPY ./docker/frontend/conf/httpd.conf /usr/local/apache2/conf/httpd.conf
-COPY ./docker/frontend/conf/httpd-ssl.conf /usr/local/apache2/conf/extra/httpd-ssl.conf
+# Startup script: conditionally remove backend vhost configs (runs after envsubst)
+COPY ./docker/frontend/scripts/configure-vhosts.sh /docker-entrypoint.d/21-configure-vhosts.sh
+RUN chmod +x /docker-entrypoint.d/21-configure-vhosts.sh
 
-ARG ADMIN_EMAIL_ADDRESS
-ARG ROOT_URL
-
-# Replace environment arguments in httpd config files
-RUN sed -i -e "s|%ROOT_URL%|${ROOT_URL}|g" /usr/local/apache2/conf/extra/httpd-ssl.conf \
-    -e "s|%ADMIN_EMAIL_ADDRESS%|${ADMIN_EMAIL_ADDRESS}|g" /usr/local/apache2/conf/extra/httpd-ssl.conf
-
-WORKDIR /usr/local/apache2/htdocs/
+WORKDIR /usr/share/nginx/html
 
 # Website structure
 COPY ./docker/frontend/pages/robots.txt \
@@ -79,16 +73,16 @@ COPY ./docker/frontend/pages/historic/historic_user_hourly.html ./historic_user_
 COPY ./docker/frontend/pages/historic/historic_user_monthly.html ./historic_user_monthly
 
 # Copy the RAML API and minified JS/CSS files
-COPY --from=raml /docker/apache/api.html ./api.html
-COPY --from=minifier /docker/apache/site/res ./res
+COPY --from=raml /docker/nginx/api.html ./api.html
+COPY --from=minifier /docker/nginx/site/res ./res
 
-# Add a hash to each of the JS files to avoid Apache caching them after changes are made
+# Add a hash to each of the JS files to avoid caching them after changes are made
 # Also update all existing HTML pages references to the files to the new name
 COPY ./docker/frontend/scripts/hash_files.sh /hash_files.sh
 RUN chmod +x /hash_files.sh && \
     sh /hash_files.sh "js" && \
     sh /hash_files.sh "css" && \
-    rm -f /usr/local/apache2/htdocs/hash_files.sh
+    rm -f /hash_files.sh
 
 # Copy the static content (images, 3PP JS/CSS files) only after the src JS files have been renamed and moved
 COPY ./docker/frontend/res/img ./res/img
@@ -105,14 +99,8 @@ RUN grep -rl '%FORUM_LINK%' . | xargs sed -i "s|%FORUM_LINK%|${FORUM_LINK}|g" &&
     grep -rl '%ROOT_URL%' . | xargs sed -i "s|%ROOT_URL%|${ROOT_URL}|g" && \
     grep -rl '%TITLE%' . | xargs sed -i "s|%TITLE%|${TITLE}|g"
 
-# Create non-root user, make owner of log directory
-RUN adduser -D frontend_user && \
-    mkdir --parents /usr/local/apache2/logs && \
-    chown -R frontend_user:frontend_user /usr/local/apache2/logs
-USER frontend_user
-
 HEALTHCHECK --interval=30s \
             --timeout=5s \
             --start-period=10s \
             --retries=3 \
-            CMD [ "/usr/bin/wget", "--no-check-certificate", "--no-verbose", "--tries=1", "--spider", "https://localhost:443" ]
+            CMD wget --no-check-certificate --quiet --tries=1 --spider https://127.0.0.1:443/ -O /dev/null --header="Host: ${NGINX_FRONTEND_URL}"

@@ -5,8 +5,8 @@
 # hash.
 ####################################
 
-START_DIRECTORY="/usr/local/apache2/htdocs/res/"
-END_DIRECTORY="/usr/local/apache2/htdocs/"
+START_DIRECTORY="/usr/share/nginx/html/res/"
+END_DIRECTORY="/usr/share/nginx/html"
 
 function main() {
   file_extension="${1}"

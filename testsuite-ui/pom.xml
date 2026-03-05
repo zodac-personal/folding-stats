@@ -86,24 +86,6 @@
                             <name>testIpAddress</name>
                             <value>127.0.0.1</value> <!-- Value for Windows 10 Docker for Windows -->
                         </property>
-
-                        <!-- Ports for the Selenium containers, should match values in 'docker-compose-dev.yml' -->
-                        <property>
-                            <name>chromePort</name>
-                            <value>4444</value>
-                        </property>
-                        <property>
-                            <name>edgePort</name>
-                            <value>4445</value>
-                        </property>
-                        <property>
-                            <name>firefoxPort</name>
-                            <value>4446</value>
-                        </property>
-                        <property>
-                            <name>operaPort</name>
-                            <value>4447</value>
-                        </property>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>

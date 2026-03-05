@@ -29,8 +29,8 @@ import net.zodac.folding.api.tc.stats.OffsetTcStats;
  * @param unitsOffset            the units offset
  */
 @Schema(name = "OffsetTcStatsRequest",
-    description = "A JSON request to offset the stats for a user through the /stats endpoint " +
-        "(at least one of 'pointsOffset' or 'multipliedPointsOffset' must be non-zero)",
+    description = "A JSON request to offset the stats for a user through the /stats endpoint "
+        + "(at least one of 'pointsOffset' or 'multipliedPointsOffset' must be non-zero)",
     example = """
         {
           "pointsOffset": 150,

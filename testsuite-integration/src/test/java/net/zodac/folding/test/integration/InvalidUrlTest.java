@@ -55,6 +55,6 @@ class InvalidUrlTest {
 
         assertThat(redirectLocation)
             .as("Expected redirect to go to home page: %s, %s", response.body(), response.headers())
-            .isEqualTo("https://127.0.0.1:81");
+            .isEqualTo("https://127.0.0.1:443");
     }
 }

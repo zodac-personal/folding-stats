@@ -17,3 +17,6 @@ docker/database/jooq/net/
 
 # Environment files
 .env
+
+# Container content
+certs/

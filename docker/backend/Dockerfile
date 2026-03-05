@@ -1,37 +1,11 @@
 # syntax = docker/dockerfile:1.2
 ############################
-# Stage 1: Generate certs
-############################
-FROM eclipse-temurin:25.0.2_10-jdk AS cert_builder
-
-RUN mkdir --parents /usr/local/certs/stats/
-WORKDIR /usr/local/certs/stats/
-
-ARG KEYSTORE_PASSWORD
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-# Generate PCKS12 keystore with self-signed certificate, and extract public crt and private key
-RUN apt-get update && apt-get install -yqq --no-install-recommends openssl && \
-    keytool \
-        -genkey \
-        -alias folding-stats \
-        -dname "cn=folding,ou=stats,o=zodac.net,l=Auckland,s=Auckland,C=NZ" \
-        -keyalg RSA \
-        -keysize 4096 \
-        -storetype PKCS12 \
-        -keystore folding-stats.p12 \
-        -validity 3650 \
-        -storepass "${KEYSTORE_PASSWORD}" && \
-    openssl pkcs12 -in folding-stats.p12 -out folding-stats.pem -nodes -passin pass:"${KEYSTORE_PASSWORD}" && \
-    sed -n '/^-----BEGIN CERTIFICATE-----/,/^-----END CERTIFICATE-----/{p;/^-----END CERTIFICATE-----/q}' folding-stats.pem > folding-stats.crt && \
-    sed -n '/^-----BEGIN PRIVATE KEY-----/,/^-----END PRIVATE KEY-----/{p;/^-----END PRIVATE KEY-----/q}' folding-stats.pem > folding-stats.key
-
-############################
-# Stage 2: Maven binary
+# Stage 1: Maven binary
 ############################
 FROM maven:3.9.12-eclipse-temurin-21 AS maven_builder
 
 ############################
-# Stage 3: Build application
+# Stage 2: Build application
 ############################
 FROM eclipse-temurin:25.0.2_10-jdk AS application_builder
 
@@ -68,7 +42,7 @@ RUN --mount=type=cache,target=/root/.m2 mvn verify -P docker -Dlogging-config-lo
     mv ./target/folding-stats-rest*.jar /folding-stats.jar
 
 ############################
-# Stage 4: Custom JDK via jlink
+# Stage 3: Custom JDK via jlink
 ############################
 FROM eclipse-temurin:25.0.2_10-jdk AS jdk_builder
 
@@ -82,32 +56,28 @@ RUN apt-get update && apt-get install -yqq --no-install-recommends binutils && \
     strip -p --strip-unneeded "/opt/jdk/lib/server/libjvm.so"
 
 ############################
-# Stage 5: Prep scripts
+# Stage 4: Prep scripts
 #############################
 FROM debian:13.3-slim AS prep_scripts
 COPY ./docker/backend/scripts/startup.sh /startup.sh
-COPY ./docker/backend/scripts/healthcheck.sh /healthcheck.sh
-RUN chmod +x /startup.sh /healthcheck.sh
+RUN chmod +x /startup.sh
 
 ############################
-# Stage 6: Install busybox
+# Stage 5: Install busybox
 #############################
 FROM busybox:1.37.0-musl AS shell_builder
 
 ############################
-# Stage 7: Distroless runtime
+# Stage 6: Distroless runtime
 ############################
 FROM gcr.io/distroless/base-debian13:nonroot AS runtime
 
 # Copy custom JDK and app
 COPY --from=jdk_builder /opt/jdk /opt/jdk
 COPY --from=application_builder /folding-stats.jar /folding-stats.jar
-# Certs
-COPY --from=cert_builder /usr/local/certs/stats/ /usr/local/certs/stats/
 # Config and startup script
 COPY ./docker/backend/config/log4j2.xml /var/backend/log4j2.xml
 COPY --from=prep_scripts /startup.sh /startup.sh
-COPY --from=prep_scripts /healthcheck.sh /healthcheck.sh
 COPY --from=shell_builder /bin/busybox /bin/wget
 COPY --from=shell_builder /bin/busybox /bin/sh
 
@@ -118,6 +88,11 @@ ENV PATH="${JAVA_HOME}/bin:${PATH}"
 WORKDIR /var/backend/logs
 
 # Set up the healthcheck
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD [ "/healthcheck.sh" ]
+HEALTHCHECK --interval=30s \
+            --timeout=5s \
+            --start-period=10s \
+            --retries=3 \
+            CMD [ "/bin/wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:8080/folding/actuator/health" ]
+EXPOSE 8080
 
 ENTRYPOINT [ "/startup.sh" ]

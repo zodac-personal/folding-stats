@@ -1,0 +1,7 @@
+# Redirect HTTP to HTTPS for frontend
+server {
+    listen 80;
+    server_name ${NGINX_FRONTEND_URL};
+
+    return 301 https://$host$request_uri;
+}

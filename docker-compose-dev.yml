@@ -5,51 +5,57 @@ networks:
 
 services:
 
-  frontend_dev:
+  frontend-dev:
     build:
       context: .
       dockerfile: docker/frontend/Dockerfile
       args:
         # Build arguments
-        ADMIN_EMAIL_ADDRESS: "email@test.com"
         FORUM_LINK: "https://extremehw.net/forum/125-extreme-team-folding"
-        REST_ENDPOINT_URL: "http://127.0.0.1:8079/folding"
-        ROOT_URL: "https://127.0.0.1:81"
+        REST_ENDPOINT_URL: "http://127.0.0.1:8080/folding"
+        ROOT_URL: "https://127.0.0.1:443"
         TITLE: "Extreme Team Folding"
         UPDATE_ENABLED: "false"
-    container_name: frontend_dev
+    container_name: frontend-dev
     hostname: frontend-dev
     depends_on:
-      - backend_dev
+      backend-dev:
+        condition: service_healthy
+    environment:
+      # These are used by nginx envsubst at container startup
+      NGINX_BACKEND_HOSTNAME: "backend-dev"
+      NGINX_FRONTEND_URL: "127.0.0.1"
+      NGINX_ENABLE_BACKEND_VHOST: "false"
     networks:
       - development
     ports:
-      - "81:443"
+      - "80:80"
+      - "443:443"
     restart: "no"
-    volumes_from:
-      - backend_dev
+    volumes:
+      - ./docker/frontend/certs:/usr/local/certs/stats/:ro
 
-  backend_dev:
+  backend-dev:
     build:
       context: .
       dockerfile: docker/backend/Dockerfile
-      args:
-        # Build arguments
-        KEYSTORE_PASSWORD: "shroot"
-    container_name: backend_dev
-    hostname: backend-dev # Using a dash as Java's URI builder will fail with an underscore
+    container_name: backend-dev
+    hostname: backend-dev
+    depends_on:
+      database-dev:
+        condition: service_healthy
     environment:
       # External URL configuration
-      LARS_URL_ROOT: "http://backend-dev:8443/folding"
-      STATS_URL_ROOT: "http://backend-dev:8443/folding"
-      REDIRECT_URL: "https://127.0.0.1:81"
+      LARS_URL_ROOT: "http://backend-dev:8080/folding"
+      STATS_URL_ROOT: "http://backend-dev:8080/folding"
+      REDIRECT_URL: "https://127.0.0.1:443"
       # Spring configuration
       LOG_LEVEL: "INFO"
       DEPLOYMENT_TYPE: "test"
       JVM_MAX: "512m"
       JVM_MIN: "128m"
       MULTIPLE_LOG_FILES: "false"
-      SPRING_DATASOURCE_URL: "jdbc:postgresql://database_dev:5432/folding_db"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://database-dev:5432/folding_db"
       SPRING_DATASOURCE_DRIVER: "org.postgresql.Driver"
       SPRING_DATASOURCE_USERNAME: "folding_user"
       SPRING_DATASOURCE_PASSWORD: "shroot"
@@ -63,6 +69,10 @@ services:
       MAXIMUM_HTTP_REQUEST_ATTEMPTS: "3"
       SECONDS_BETWEEN_HTTP_REQUEST_ATTEMPTS: "0"
       STATS_SCHEDULED_PARSING_ENABLED: "false"
+      # Security configuration, default user
+      SPRING_SECURITY_USER_NAME: "${ADMIN_USER}"
+      SPRING_SECURITY_USER_PASSWORD: "${ADMIN_PASSWORD}"
+      SPRING_SECURITY_USER_ROLES: "ADMIN"
       # Category configuration
       USERS_IN_AMD_GPU: "1"
       USERS_IN_NVIDIA_GPU: "1"
@@ -70,16 +80,14 @@ services:
       # Swagger documentation
       CONTACT_NAME: "zodac"
       FORUM_LINK: "https://extremehw.net/forum/125-extreme-team-folding"
-      REST_ENDPOINT_URL: "http://127.0.0.1:8079/folding"
+      REST_ENDPOINT_URL: "http://127.0.0.1:8080/folding"
     networks:
       - development
     ports:
-      - "8079:8443"
+      - "8080:8080"
     restart: "no"
-    volumes:
-      - /usr/local/certs/stats/
 
-  database_dev:
+  database-dev:
     build:
       context: .
       dockerfile: docker/database/Dockerfile
@@ -90,8 +98,8 @@ services:
         READ_ONLY_USERNAME: "root2"
         READ_ONLY_PASSWORD: "shroot2"
         POSTGRES_USER: "folding_user"
-    container_name: database_dev
-    hostname: database_dev
+    container_name: database-dev
+    hostname: database-dev
     environment:
       # First 4 variables used to configure DB
       POSTGRES_DB: "folding_db"
@@ -109,24 +117,24 @@ services:
       - "5433:5432"
     restart: "no"
 
-  selenium_chrome:
+  selenium-chrome:
     image: selenium/standalone-chrome:145.0  # https://hub.docker.com/r/selenium/standalone-chrome/tags
-    container_name: selenium_chrome
-    hostname: selenium_chrome
+    container_name: selenium-chrome
+    hostname: selenium-chrome
     depends_on:
-      - frontend_dev
+      - frontend-dev
     networks:
       - development
     ports:
       - "4444:4444"
     restart: "no"
 
-  selenium_firefox:
+  selenium-firefox:
     image: selenium/standalone-firefox:148.0-20260222  # https://hub.docker.com/r/selenium/standalone-firefox/tags
-    container_name: selenium_firefox
-    hostname: selenium_firefox
+    container_name: selenium-firefox
+    hostname: selenium-firefox
     depends_on:
-      - frontend_dev
+      - frontend-dev
     networks:
       - development
     ports:

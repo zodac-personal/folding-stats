@@ -11,7 +11,6 @@ services:
       dockerfile: docker/frontend/Dockerfile
       args:
         # Build arguments
-        ADMIN_EMAIL_ADDRESS: "${ADMIN_EMAIL_ADDRESS}"
         FORUM_LINK: "${FORUM_LINK}"
         REST_ENDPOINT_URL: "${REST_ENDPOINT_URL}"
         ROOT_URL: "${ROOT_URL}"
@@ -20,24 +19,32 @@ services:
     container_name: frontend
     hostname: frontend
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+    environment:
+      # These are used by nginx envsubst at container startup
+      NGINX_BACKEND_HOSTNAME: "backend"
+      NGINX_BACKEND_URL: "${NGINX_BACKEND_URL}"
+      NGINX_FRONTEND_URL: "${NGINX_FRONTEND_URL}"
+      NGINX_ENABLE_BACKEND_VHOST: "true"
     networks:
       - production
     ports:
-      - "${HTTPS_FRONTEND_PORT}:443"
+      - "80:80"
+      - "443:443"
     restart: "unless-stopped"
-    volumes_from:
-      - backend:ro
+    volumes:
+      - ./docker/frontend/certs:/usr/local/certs/stats/:ro
 
   backend:
     build:
       context: .
       dockerfile: docker/backend/Dockerfile
-      args:
-        # Build arguments
-        KEYSTORE_PASSWORD: "${KEYSTORE_PASSWORD}"
     container_name: backend
     hostname: backend
+    depends_on:
+      database:
+        condition: service_healthy
     environment:
       # External URL configuration
       LARS_URL_ROOT: "${LARS_URL_ROOT}"
@@ -49,7 +56,6 @@ services:
       JVM_MAX: "1024m"
       JVM_MIN: "128m"
       MULTIPLE_LOG_FILES: "true"
-      SERVER_SSL_KEY_STORE_PASSWORD: "${KEYSTORE_PASSWORD}"
       SPRING_DATASOURCE_URL: "jdbc:postgresql://database:${POSTGRES_PORT}/${POSTGRES_DB_NAME}"
       SPRING_DATASOURCE_DRIVER: "org.postgresql.Driver"
       SPRING_DATASOURCE_USERNAME: "${DB_USER}"
@@ -65,6 +71,10 @@ services:
       SECONDS_BETWEEN_HTTP_REQUEST_ATTEMPTS: "${SECONDS_BETWEEN_HTTP_REQUEST_ATTEMPTS}"
       STATS_SCHEDULED_PARSING_ENABLED: "${STATS_ENABLED}"
       STATS_SCHEDULED_PARSING_CRON: "0 55 * 3-31 * *"
+      # Security configuration, default user
+      SPRING_SECURITY_USER_NAME: "root"
+      SPRING_SECURITY_USER_PASSWORD: "shroot"
+      SPRING_SECURITY_USER_ROLES: "ADMIN"
       # Category configuration
       USERS_IN_AMD_GPU: "${USERS_IN_AMD_GPU}"
       USERS_IN_NVIDIA_GPU: "${USERS_IN_NVIDIA_GPU}"
@@ -76,10 +86,9 @@ services:
     networks:
       - production
     ports:
-      - "${HTTPS_BACKEND_PORT}:8443"
+      - "8080:8080"
     restart: "unless-stopped"
     volumes:
-      - backend_certs:/usr/local/certs/stats/
       - backend_logs:/var/backend/logs/
 
   database:
@@ -122,5 +131,3 @@ volumes:
   database_content: { }
   # Volume to save the backend logs in case of a crash
   backend_logs: { }
-  # Volume to save the generated SSL certs for the backend
-  backend_certs: { }
