@@ -92,7 +92,9 @@ HEALTHCHECK --interval=30s \
             --timeout=5s \
             --start-period=10s \
             --retries=3 \
-            CMD [ "/bin/wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:8080/folding/actuator/health" ]
-EXPOSE 8080
+            CMD [ "/bin/wget", "--no-check-certificate", "--quiet", "--tries=1", "--spider", "https://127.0.0.1:8443/folding/actuator/health" ]
+# TODO: [Reverse Proxy] Need to keep legacy port
+#EXPOSE 8080
+EXPOSE 8443
 
 ENTRYPOINT [ "/startup.sh" ]

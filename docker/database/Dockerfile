@@ -1,8 +1,5 @@
 FROM postgres:18.3-alpine
 
-# Updating system packages
-RUN apk --no-cache update && apk --no-cache upgrade
-
 ARG ADMIN_USERNAME
 ARG ADMIN_PASSWORD
 ARG READ_ONLY_USERNAME

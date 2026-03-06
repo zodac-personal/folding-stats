@@ -24,7 +24,7 @@ public final class TestConstants { // NOPMD: DataClass - Happy to break encapsul
 
     // URL
     public static final String TEST_IP_ADDRESS = System.getProperty("testIpAddress", "127.0.0.1"); // NOPMD: AvoidUsingHardCodedIP - Fine here
-    public static final String FOLDING_URL = String.format("http://%s:8080/folding", TEST_IP_ADDRESS);
+    public static final String FOLDING_URL = String.format("https://%s:8443/folding", TEST_IP_ADDRESS);
 
     // ID
     public static final int NON_EXISTING_ID = 9_999;

@@ -56,6 +56,8 @@ services:
       JVM_MAX: "1024m"
       JVM_MIN: "128m"
       MULTIPLE_LOG_FILES: "true"
+      # TODO: [Reverse Proxy] Need to enable SSL on the Spring Boot level
+      SERVER_SSL_KEY_STORE_PASSWORD: "${KEYSTORE_PASSWORD}"
       SPRING_DATASOURCE_URL: "jdbc:postgresql://database:${POSTGRES_PORT}/${POSTGRES_DB_NAME}"
       SPRING_DATASOURCE_DRIVER: "org.postgresql.Driver"
       SPRING_DATASOURCE_USERNAME: "${DB_USER}"
@@ -86,10 +88,13 @@ services:
     networks:
       - production
     ports:
-      - "8080:8080"
+      # TODO: [Reverse Proxy] Need to keep legacy port
+      # - "8080:8080"
+      - "8443:8443"
     restart: "unless-stopped"
     volumes:
       - backend_logs:/var/backend/logs/
+      - ./docker/frontend/certs/folding-stats.p12:/usr/local/certs/stats/folding-stats.p12:ro
 
   database:
     build:

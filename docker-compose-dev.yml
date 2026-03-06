@@ -12,7 +12,7 @@ services:
       args:
         # Build arguments
         FORUM_LINK: "https://extremehw.net/forum/125-extreme-team-folding"
-        REST_ENDPOINT_URL: "http://127.0.0.1:8080/folding"
+        REST_ENDPOINT_URL: "https://127.0.0.1:8443/folding"
         ROOT_URL: "https://127.0.0.1:443"
         TITLE: "Extreme Team Folding"
         UPDATE_ENABLED: "false"
@@ -20,7 +20,8 @@ services:
     hostname: frontend-dev
     depends_on:
       backend-dev:
-        condition: service_healthy
+        # TODO: [Reverse Proxy] Disable dev healthcheck
+        condition: service_started
     environment:
       # These are used by nginx envsubst at container startup
       NGINX_BACKEND_HOSTNAME: "backend-dev"
@@ -46,8 +47,8 @@ services:
         condition: service_healthy
     environment:
       # External URL configuration
-      LARS_URL_ROOT: "http://backend-dev:8080/folding"
-      STATS_URL_ROOT: "http://backend-dev:8080/folding"
+      LARS_URL_ROOT: "https://backend-dev:8443/folding"
+      STATS_URL_ROOT: "https://backend-dev:8443/folding"
       REDIRECT_URL: "https://127.0.0.1:443"
       # Spring configuration
       LOG_LEVEL: "INFO"
@@ -55,6 +56,8 @@ services:
       JVM_MAX: "512m"
       JVM_MIN: "128m"
       MULTIPLE_LOG_FILES: "false"
+      # TODO: [Reverse Proxy] Need to enable SSL on the Spring Boot level
+      SERVER_SSL_KEY_STORE_PASSWORD: "${KEYSTORE_PASSWORD}"
       SPRING_DATASOURCE_URL: "jdbc:postgresql://database-dev:5432/folding_db"
       SPRING_DATASOURCE_DRIVER: "org.postgresql.Driver"
       SPRING_DATASOURCE_USERNAME: "folding_user"
@@ -80,12 +83,19 @@ services:
       # Swagger documentation
       CONTACT_NAME: "zodac"
       FORUM_LINK: "https://extremehw.net/forum/125-extreme-team-folding"
-      REST_ENDPOINT_URL: "http://127.0.0.1:8080/folding"
+      REST_ENDPOINT_URL: "https://127.0.0.1:8443/folding"
+    # TODO: [Reverse Proxy] Disable dev healthcheck
+    healthcheck:
+      test: [ "NONE" ]
     networks:
       - development
     ports:
-      - "8080:8080"
+      # TODO: [Reverse Proxy] Need to keep legacy port
+      # - "8080:8080"
+      - "8443:8443"
     restart: "no"
+    volumes:
+      - ./docker/frontend/certs/folding-stats.p12:/usr/local/certs/stats/folding-stats.p12:ro
 
   database-dev:
     build:
